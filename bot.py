@@ -8,7 +8,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8712671324:AAE_uIcGzEU-TYgXgl1c_o4t4I_KwijeM50")
-MINI_APP_URL = os.getenv("MINI_APP_URL", "https://behind-weighted-dude-roughly.trycloudflare.com")
+MINI_APP_URL = os.getenv("MINI_APP_URL", "https://gym-frontend-plum-rho.vercel.app")
 
 dp = Dispatcher()
 
