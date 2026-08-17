@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  gym_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gym_tma_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - DATA_DIR=/app/data
+      - BOT_TOKEN=${BOT_TOKEN:-8712671324:AAE_uIcGzEU-TYgXgl1c_o4t4I_KwijeM50}
+      - MINI_APP_URL=${MINI_APP_URL:-https://your-frontend.vercel.app}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
+    volumes:
+      # Persistent volume for SQLite database and uploaded photos
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

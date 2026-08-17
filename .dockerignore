@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+gym_frontend/
+.git/
+.gitignore
+.DS_Store
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+uploads/
+data/
