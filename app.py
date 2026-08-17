@@ -85,10 +85,14 @@ def get_recommendations(profile: UserProfileRequest):
     # Recent photo check-ins
     check_ins = db.get_user_check_ins(profile.telegram_id, limit=8)
     
+    # User attendance dates
+    attendance = db.get_user_attendance(profile.telegram_id)
+    
     return {
         "user_status": level_info,
         "workouts": splits,
-        "check_ins": check_ins
+        "check_ins": check_ins,
+        "attendance": attendance
     }
 
 @api.post("/api/check-in")
@@ -148,6 +152,21 @@ async def check_in_workout_photo(
 def get_user_history(telegram_id: int):
     check_ins = db.get_user_check_ins(telegram_id=telegram_id, limit=20)
     return {"check_ins": check_ins}
+
+class AttendancePayload(BaseModel):
+    telegram_id: int
+    date_str: str
+
+@api.post("/api/attendance")
+def record_attendance(payload: AttendancePayload):
+    db.add_attendance_date(payload.telegram_id, payload.date_str)
+    all_dates = db.get_user_attendance(payload.telegram_id)
+    return {"success": True, "attendance": all_dates}
+
+@api.get("/api/attendance/{telegram_id}")
+def get_attendance_history(telegram_id: int):
+    dates = db.get_user_attendance(telegram_id)
+    return {"attendance": dates}
 
 @api.post("/api/complete-workout")
 def complete_workout(

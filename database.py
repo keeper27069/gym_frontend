@@ -50,6 +50,18 @@ def init_db():
             FOREIGN KEY (telegram_id) REFERENCES users(telegram_id)
         )
         """)
+
+        # Workout attendance dates table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS workout_attendance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER NOT NULL,
+            date_str TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(telegram_id, date_str),
+            FOREIGN KEY (telegram_id) REFERENCES users(telegram_id)
+        )
+        """)
         
         conn.commit()
     finally:
@@ -165,6 +177,33 @@ def get_user_check_ins(telegram_id: int, limit: int = 12) -> List[Dict[str, Any]
         rows = cursor.fetchall()
         results = [dict(r) for r in rows]
         return results
+    finally:
+        conn.close()
+
+def add_attendance_date(telegram_id: int, date_str: str) -> bool:
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+        INSERT OR IGNORE INTO workout_attendance (telegram_id, date_str)
+        VALUES (?, ?)
+        """, (telegram_id, date_str))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+def get_user_attendance(telegram_id: int) -> List[str]:
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+        SELECT date_str FROM workout_attendance
+        WHERE telegram_id = ?
+        ORDER BY date_str DESC
+        """, (telegram_id,))
+        rows = cursor.fetchall()
+        return [r["date_str"] for r in rows]
     finally:
         conn.close()
 
