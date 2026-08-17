@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd gym_frontend && npm install && npm run build",
+  "outputDirectory": "gym_frontend/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
