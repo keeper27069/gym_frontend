@@ -1460,3 +1460,160 @@ export function findWorkouts(goal = 'muscle_gain', gender = 'male', level = 1, w
     })
   }));
 }
+
+// 5-Minute Joint and Mobility Warm-up Routine
+export const WARMUP_EXERCISES = [
+  {
+    id: 'w1',
+    name: 'Суставная гимнастика шеи, плеч и локтей',
+    duration: '60 сек',
+    tip: 'Мягкие круговые вращения в суставах, подготовка синовиальной жидкости к нагрузке.',
+    icon: 'RotateCw'
+  },
+  {
+    id: 'w2',
+    name: 'Разогрев ротаторов плеча и грудного отдела',
+    duration: '60 сек',
+    tip: 'Вращения прямых рук, сведение-разведение лопаток без веса или с легкой резинкой.',
+    icon: 'Activity'
+  },
+  {
+    id: 'w3',
+    name: 'Мобильность тазобедренных суставов & приседы с весом тела',
+    duration: '90 сек',
+    tip: '15 глубоких приседаний с фиксацией внизу для раскрытия таза и коленей.',
+    icon: 'Dumbbell'
+  },
+  {
+    id: 'w4',
+    name: 'Динамическая планка и активация кора',
+    duration: '45 сек',
+    tip: 'Планка на предплечьях с поочередным выпрямлением рук для включения пресса и стабилизаторов.',
+    icon: 'Shield'
+  },
+  {
+    id: 'w5',
+    name: 'Легкий кардио-разогрев (дорожка / эллипс / прыжки)',
+    duration: '2-3 мин',
+    tip: 'Пульс 110-125 уд/мин, разогрев мышц до легкого потоотделения.',
+    icon: 'Flame'
+  }
+];
+
+// 4-Minute Stretching Cooldown Routine
+export const COOLDOWN_EXERCISES = [
+  {
+    id: 'c1',
+    name: 'Растяжка грудных мышц и передних дельт',
+    duration: '45 сек',
+    tip: 'Рука упирается в стойку/стену, плавный поворот корпуса в противоположную сторону.'
+  },
+  {
+    id: 'c2',
+    name: 'Растяжка широчайших мышц спины',
+    duration: '45 сек',
+    tip: 'Хват за стойку тренажера двумя руками, отведение таза назад с расслаблением спины.'
+  },
+  {
+    id: 'c3',
+    name: 'Растяжка квадрицепса и бицепса бедра',
+    duration: '60 сек',
+    tip: 'Мягкое притягивание пятки к ягодице стоя, затем наклон к прямой ноге.'
+  },
+  {
+    id: 'c4',
+    name: 'Глубокое диафрагмальное дыхание',
+    duration: '60 сек',
+    tip: 'Медленный вдох носом на 4 счета, задержка на 2 счета, выдох ртом на 6 счетов для снижения кортизола.'
+  }
+];
+
+// Mifflin-St Jeor Daily Calories & Macronutrients Calculator
+export function calculateNutrition(gender = 'male', age = 25, weight = 75, goal = 'muscle_gain') {
+  const w = Number(weight) || 75;
+  const a = Number(age) || 25;
+  
+  // Basal Metabolic Rate (Mifflin-St Jeor) assuming standard heights
+  const h = gender === 'female' ? 165 : 178;
+  const bmr = (10 * w) + (6.25 * h) - (5 * a) + (gender === 'female' ? -161 : 5);
+  
+  // Moderate activity multiplier (3 gym sessions per week)
+  const tdee = Math.round(bmr * 1.45);
+  
+  let targetCalories = tdee;
+  let proteinPerKg = 2.0;
+  let fatPerKg = 1.0;
+  
+  if (goal === 'muscle_gain') {
+    targetCalories = Math.round(tdee * 1.15); // +15% caloric surplus
+    proteinPerKg = 2.0;
+    fatPerKg = 1.0;
+  } else {
+    targetCalories = Math.round(tdee * 0.82); // -18% caloric deficit
+    proteinPerKg = 2.2;
+    fatPerKg = 0.9;
+  }
+  
+  const proteinGrams = Math.round(w * proteinPerKg);
+  const fatGrams = Math.round(w * fatPerKg);
+  const proteinCalories = proteinGrams * 4;
+  const fatCalories = fatGrams * 9;
+  const carbCalories = Math.max(0, targetCalories - proteinCalories - fatCalories);
+  const carbGrams = Math.round(carbCalories / 4);
+  
+  // Water intake
+  const waterLiters = Math.round((w * 0.035) * 10) / 10;
+  const waterGlasses = Math.max(6, Math.round((waterLiters * 1000) / 250));
+  
+  return {
+    calories: targetCalories,
+    protein: proteinGrams,
+    fats: fatGrams,
+    carbs: carbGrams,
+    waterLiters,
+    waterGlasses,
+    bmr: Math.round(bmr),
+    tdee
+  };
+}
+
+// Web Audio API Sound Synthesizer for Gym Timer Beeps
+let audioCtx = null;
+export function playAudioBeep(type = 'countdown') {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    if (!audioCtx) audioCtx = new AudioContextClass();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    if (type === 'countdown') {
+      // 3, 2, 1 short alert beep
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, now);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } else if (type === 'finish') {
+      // High cheerful completion whistle/chime
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1046.5, now); // C6
+      osc.frequency.setValueAtTime(1318.5, now + 0.1); // E6
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    }
+  } catch (e) {
+    // Silent fail if browser audio policy restricts
+  }
+}
