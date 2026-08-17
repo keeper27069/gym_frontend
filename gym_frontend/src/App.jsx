@@ -23,6 +23,7 @@ import {
   Layers
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { findWorkouts, calculateLevel, RANKS } from './workoutsData';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
@@ -66,24 +67,40 @@ export default function App() {
     return saved ? parseInt(saved, 10) : 0;
   });
 
-  const [userXp, setUserXp] = useState(0);
+  const [userXp, setUserXp] = useState(() => {
+    const saved = localStorage.getItem('gym_xp');
+    return saved ? parseInt(saved, 10) : 0;
+  });
 
-  const [levelInfo, setLevelInfo] = useState({
-    level: 1,
-    rank_name: 'Новичок (Novice)',
-    progress_percent: 0,
-    weeks_left: 3
+  const [levelInfo, setLevelInfo] = useState(() => {
+    const streak = parseInt(localStorage.getItem('gym_streak') || '0', 10);
+    return calculateLevel(streak);
   });
 
   // Workout state & 3-Day split selection
-  const [workoutSplits, setWorkoutSplits] = useState([]);
+  const [workoutSplits, setWorkoutSplits] = useState(() => {
+    try {
+      const saved = localStorage.getItem('gym_profile');
+      const p = saved ? JSON.parse(saved) : { goal: 'muscle_gain', gender: 'male' };
+      return findWorkouts(p.goal || 'muscle_gain', p.gender || 'male', 1);
+    } catch {
+      return findWorkouts('muscle_gain', 'male', 1);
+    }
+  });
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
   const [loading, setLoading] = useState(false);
   const [completedSets, setCompletedSets] = useState({});
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   // Check-ins / Photo proof state
-  const [checkIns, setCheckIns] = useState([]);
+  const [checkIns, setCheckIns] = useState(() => {
+    try {
+      const saved = localStorage.getItem('gym_check_ins');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -133,6 +150,10 @@ export default function App() {
   // Fetch Workouts and Status
   const fetchWorkouts = async (userProfile = profile, streak = streakWeeks) => {
     setLoading(true);
+    // Ensure workouts are instantly set from local catalog first
+    const localSplits = findWorkouts(userProfile.goal, userProfile.gender, levelInfo?.level || 1);
+    setWorkoutSplits(localSplits);
+
     try {
       const tgId = WebApp.initDataUnsafe?.user?.id || 123456;
       const res = await fetch(`${API_BASE_URL}/api/workouts`, {
@@ -148,19 +169,30 @@ export default function App() {
         })
       });
 
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
-        setWorkoutSplits(data.workouts || []);
+        if (data.workouts && data.workouts.length > 0) {
+          setWorkoutSplits(data.workouts);
+        }
         if (data.user_status) {
           setLevelInfo(data.user_status);
-          if (data.user_status.xp) setUserXp(data.user_status.xp);
+          if (data.user_status.xp !== undefined) {
+            setUserXp(data.user_status.xp);
+            localStorage.setItem('gym_xp', data.user_status.xp.toString());
+          }
         }
-        if (data.check_ins) {
+        if (data.check_ins && data.check_ins.length > 0) {
           setCheckIns(data.check_ins);
+          localStorage.setItem('gym_check_ins', JSON.stringify(data.check_ins));
         }
       }
     } catch (err) {
-      console.warn('Backend API note:', err);
+      console.warn('Backend API offline or static mode, using offline dataset');
+      const fallbackSplits = findWorkouts(userProfile.goal, userProfile.gender, levelInfo?.level || 1);
+      setWorkoutSplits(fallbackSplits);
+      const fallbackLevel = calculateLevel(streak);
+      setLevelInfo(fallbackLevel);
     } finally {
       setLoading(false);
     }
@@ -224,8 +256,13 @@ export default function App() {
     setUploadingPhoto(true);
     triggerHaptic('impact');
 
-    const prevLevel = levelInfo.level;
-    const activeWorkout = workoutSplits[selectedDayIdx];
+    const prevLevel = levelInfo?.level || 1;
+    const activeWorkout = workoutSplits[selectedDayIdx] || workoutSplits[0];
+
+    let newStreak = streakWeeks + 1;
+    let newXp = userXp + 150;
+    let newStatus = calculateLevel(newStreak);
+    let uploadedSuccessfully = false;
 
     try {
       const tgId = WebApp.initDataUnsafe?.user?.id || 123456;
@@ -240,48 +277,60 @@ export default function App() {
         body: formData
       });
 
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
-        
-        // Optimistic / returned update
-        if (data.new_streak_weeks) {
-          setStreakWeeks(data.new_streak_weeks);
-          localStorage.setItem('gym_streak', data.new_streak_weeks.toString());
+        if (data.new_streak_weeks !== undefined) newStreak = data.new_streak_weeks;
+        if (data.total_xp !== undefined) newXp = data.total_xp;
+        if (data.new_status) newStatus = data.new_status;
+        if (data.check_ins && data.check_ins.length > 0) {
+          setCheckIns(data.check_ins);
+          localStorage.setItem('gym_check_ins', JSON.stringify(data.check_ins));
         }
-        if (data.total_xp) setUserXp(data.total_xp);
-        if (data.new_status) setLevelInfo(data.new_status);
-        if (data.check_ins) setCheckIns(data.check_ins);
-
-        // Confetti celebration
-        confetti({
-          particleCount: 120,
-          spread: 80,
-          origin: { y: 0.6 }
-        });
-        triggerHaptic('success');
-
-        // Check if level upgraded
-        if (data.new_status && data.new_status.level > prevLevel) {
-          setTimeout(() => {
-            setLevelUpModal(data.new_status);
-          }, 400);
-        }
-
-        removeSelectedPhoto();
-      } else {
-        throw new Error('Upload failed');
+        uploadedSuccessfully = true;
       }
     } catch (err) {
-      console.error('Upload proof error:', err);
-      // Local fallback in offline mode
-      const nextStreak = streakWeeks + 1;
-      setStreakWeeks(nextStreak);
-      localStorage.setItem('gym_streak', nextStreak.toString());
-      confetti({ particleCount: 80, spread: 60 });
-      removeSelectedPhoto();
-    } finally {
-      setUploadingPhoto(false);
+      console.warn('Upload server unavailable, using local offline storage');
     }
+
+    // Always update streak, xp and level
+    setStreakWeeks(newStreak);
+    localStorage.setItem('gym_streak', newStreak.toString());
+    setUserXp(newXp);
+    localStorage.setItem('gym_xp', newXp.toString());
+    setLevelInfo(newStatus);
+
+    if (!uploadedSuccessfully && photoPreviewUrl) {
+      const localCheckIn = {
+        id: Date.now(),
+        workout_title: activeWorkout?.day_name || 'Тренировка в зале',
+        photo_url: photoPreviewUrl,
+        created_at: new Date().toISOString()
+      };
+      setCheckIns((prev) => {
+        const updated = [localCheckIn, ...prev].slice(0, 20);
+        localStorage.setItem('gym_check_ins', JSON.stringify(updated));
+        return updated;
+      });
+    }
+
+    // Confetti celebration
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.6 }
+    });
+    triggerHaptic('success');
+
+    // Check if level upgraded
+    if (newStatus && newStatus.level > prevLevel) {
+      setTimeout(() => {
+        setLevelUpModal(newStatus);
+      }, 400);
+    }
+
+    removeSelectedPhoto();
+    setUploadingPhoto(false);
   };
 
   // Submit Profile Form
@@ -292,6 +341,9 @@ export default function App() {
     setProfile(updated);
     setIsEditingProfile(false);
     localStorage.setItem('gym_profile', JSON.stringify(updated));
+    const splits = findWorkouts(updated.goal, updated.gender, levelInfo?.level || 1);
+    setWorkoutSplits(splits);
+    setSelectedDayIdx(0);
     fetchWorkouts(updated, streakWeeks);
   };
 

@@ -136,7 +136,140 @@ WORKOUT_SPLITS = [
     },
 
     # ==========================================
-    # 2. WEIGHT LOSS / TONING (FEMALE / ANY) - 3-DAY SPLIT
+    # 2. MUSCLE GAIN / TONING (FEMALE) - 3-DAY SPLIT
+    # ==========================================
+    {
+        "id": 151,
+        "split_id": "muscle_gain_female",
+        "day_number": 1,
+        "day_name": "День 1: Ягодицы & Бицепс бедра (Glute Hypertrophy)",
+        "target_goal": "muscle_gain",
+        "target_gender": "female",
+        "difficulty_level": 1,
+        "exercises": [
+            {
+                "name": "Ягодичный мостик со штангой",
+                "sets": 4,
+                "reps": "10-12",
+                "rest_sec": 75,
+                "video_url": "https://www.youtube.com/embed/SEdqd1n0cvg",
+                "tip": "Задержитесь на 2 секунды в верхней точке с максимальным напряжением ягодиц."
+            },
+            {
+                "name": "Болгарские сплит-приседания с гантелями",
+                "sets": 3,
+                "reps": "10-12 на ногу",
+                "rest_sec": 60,
+                "video_url": "https://www.youtube.com/embed/2C-uNgKwPLE",
+                "tip": "Корпус слегка наклонен вперед для изоляции ягодичной мышцы."
+            },
+            {
+                "name": "Румынская тяга с гантелями",
+                "sets": 4,
+                "reps": "12",
+                "rest_sec": 60,
+                "video_url": "https://www.youtube.com/embed/JCXUYuzwNrM",
+                "tip": "Отводите таз назад, спина строго прямая."
+            },
+            {
+                "name": "Разведение ног в тренажере сидя",
+                "sets": 3,
+                "reps": "15-20",
+                "rest_sec": 45,
+                "video_url": "https://www.youtube.com/embed/pvIjsG5Svck",
+                "tip": "Наклоните корпус немного вперед для лучшего включения средней ягодичной."
+            }
+        ]
+    },
+    {
+        "id": 152,
+        "split_id": "muscle_gain_female",
+        "day_number": 2,
+        "day_name": "День 2: Спина, Плечи & Руки (Upper Tone & Posture)",
+        "target_goal": "muscle_gain",
+        "target_gender": "female",
+        "difficulty_level": 1,
+        "exercises": [
+            {
+                "name": "Тяга верхнего блока к груди",
+                "sets": 4,
+                "reps": "10-12",
+                "rest_sec": 60,
+                "video_url": "https://www.youtube.com/embed/CAwf7n6Luuc",
+                "tip": "Формирование красивого силуэта спины и идеальной осанки."
+            },
+            {
+                "name": "Жим гантелей сидя на плечи",
+                "sets": 3,
+                "reps": "12",
+                "rest_sec": 60,
+                "video_url": "https://www.youtube.com/embed/qEwKCR5JCog",
+                "tip": "Подъем гантелей по плавной траектории вверх."
+            },
+            {
+                "name": "Тяга горизонтального блока к поясу",
+                "sets": 3,
+                "reps": "12-15",
+                "rest_sec": 45,
+                "video_url": "https://www.youtube.com/embed/GZbfZ033f74",
+                "tip": "Сводите лопатки вместе в финальной фазе."
+            },
+            {
+                "name": "Сгибания на бицепс + разгибания на трицепс",
+                "sets": 3,
+                "reps": "12-15",
+                "rest_sec": 45,
+                "video_url": "https://www.youtube.com/embed/ykJmrZ5v0Oo",
+                "tip": "Тонус и подтянутость рук без лишнего объема."
+            }
+        ]
+    },
+    {
+        "id": 153,
+        "split_id": "muscle_gain_female",
+        "day_number": 3,
+        "day_name": "День 3: Квадрицепс, Пресс & Кор (Legs & Abs Sculpt)",
+        "target_goal": "muscle_gain",
+        "target_gender": "female",
+        "difficulty_level": 1,
+        "exercises": [
+            {
+                "name": "Кубковые приседания (Goblet Squats)",
+                "sets": 4,
+                "reps": "12",
+                "rest_sec": 60,
+                "video_url": "https://www.youtube.com/embed/MeIiIdhvXT4",
+                "tip": "Колени разведены, держите гантель у груди."
+            },
+            {
+                "name": "Жим ногами с высокой постановкой стоп",
+                "sets": 3,
+                "reps": "12-15",
+                "rest_sec": 60,
+                "video_url": "https://www.youtube.com/embed/IZxyjW7MPJQ",
+                "tip": "Высокая постановка стоп акцентирует нагрузку на ягодицы и бедра."
+            },
+            {
+                "name": "Подъем коленей на брусьях / в висе",
+                "sets": 3,
+                "reps": "15",
+                "rest_sec": 45,
+                "video_url": "https://www.youtube.com/embed/JB2oyawG9KI",
+                "tip": "Подкручивайте таз на выдохе."
+            },
+            {
+                "name": "Планка на предплечьях",
+                "sets": 3,
+                "reps": "45-60 сек",
+                "rest_sec": 30,
+                "video_url": "https://www.youtube.com/embed/pvIjsG5Svck",
+                "tip": "Напрягите пресс и ягодицы, тело в струну."
+            }
+        ]
+    },
+
+    # ==========================================
+    # 3. WEIGHT LOSS / TONING (FEMALE / ANY) - 3-DAY SPLIT
     # ==========================================
     {
         "id": 201,
