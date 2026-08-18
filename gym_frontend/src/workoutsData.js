@@ -680,7 +680,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 75,
         rpe: 8,
         tempo: '2-2-1-0',
-        video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
+        video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
         tip: 'Пауза 2 секунды в верхней точке с максимальным прожимом ягодиц. Подбородок прижат к груди, колени под углом 90°.',
         tip_uz: 'Yuqori nuqtada 2 soniya to\'xtang va dumbani qattiq siqing. Iyak ko\'krakka egilgan bo\'lsin.',
         tip_en: 'Pause 2s at the top squeezing glutes hard. Keep chin tucked and shins vertical.',
@@ -689,14 +689,14 @@ export const WORKOUT_SPLITS = [
             name: 'Ягодичный мостик в тренажере Смита',
             name_uz: 'Smit trenajyorida dumba ko\'prigi',
             name_en: 'Smith Machine Hip Thrust',
-            video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
+            video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
             tip: 'Фиксированная траектория для комфортной работы с повышенным весом.'
           },
           {
             name: 'Kas Glute Bridge с короткой амплитудой',
             name_uz: 'Kas Glute Bridge qisqa amplituda',
             name_en: 'Kas Glute Bridge',
-            video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
+            video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
             tip: 'Исключает работу квадрицепса, нагружая только ягодицы.'
           }
         ]
@@ -714,7 +714,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 60,
         rpe: 8,
         tempo: '3-0-1-0',
-        video_url: 'https://www.youtube.com/embed/2C-uNgKwPLE',
+        video_url: 'https://www.youtube.com/embed/gT8wN1h469E',
         tip: 'Наклоните корпус слегка вперед (под 20°), чтобы сместить всю нагрузку прямо в ягодицу опорной ноги.',
         tip_uz: 'Gavdani biroz oldinga eging (20°), butun yuklama tayanch dumbaga tushadi.',
         tip_en: 'Hinge torso forward 20° to direct tension completely into the working glute.',
@@ -723,14 +723,14 @@ export const WORKOUT_SPLITS = [
             name: 'Выпады назад с гантелями',
             name_uz: 'Gantellar bilan orqaga qadam cho\'kish',
             name_en: 'Reverse Deficit Lunges',
-            video_url: 'https://www.youtube.com/embed/wrwwXE_x-pQ',
+            video_url: 'https://www.youtube.com/embed/gT8wN1h469E',
             tip: 'Мягкий шаг назад с акцентом на растяжение опорной ягодицы.'
           },
           {
             name: 'Зашагивания на высокую тумбу / скамью',
             name_uz: 'Tumbaga qadam tashlash',
             name_en: 'High Box Step-Ups',
-            video_url: 'https://www.youtube.com/embed/wrwwXE_x-pQ',
+            video_url: 'https://www.youtube.com/embed/gT8wN1h469E',
             tip: 'Толчок выполняется строго пяткой стоящей ноги без отталкивания от пола.'
           }
         ]
@@ -748,7 +748,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 60,
         rpe: 8,
         tempo: '3-1-1-0',
-        video_url: 'https://www.youtube.com/embed/JCXUYuzwNrM',
+        video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
         tip: 'Гантели скользят вплотную по ногам, таз отводится назад до натяжения задней поверхности бедра.',
         tip_uz: 'Gantellar oyoqqa yopishgan holda harakatlanadi, tozni orqaga torting.',
         tip_en: 'Push hips back until you feel deep hamstring stretch, keep dumbbells tight to legs.',
@@ -757,14 +757,14 @@ export const WORKOUT_SPLITS = [
             name: 'Сгибания ног в тренажере сидя',
             name_uz: 'O\'tirib trenajyorda oyoq bukish',
             name_en: 'Seated Leg Curls',
-            video_url: 'https://www.youtube.com/embed/JCXUYuzwNrM',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Безопасная изоляция без нагрузки на поясничный отдел.'
           },
           {
             name: 'Тяга на прямых ногах в кроссовере',
             name_uz: 'Krossoverda tortish',
             name_en: 'Cable Pull-Through',
-            video_url: 'https://www.youtube.com/embed/JCXUYuzwNrM',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Постоянный горизонтальный вектор натяжения троса.'
           }
         ]
@@ -782,7 +782,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/pvIjsG5Svck',
+        video_url: 'https://www.youtube.com/embed/fF0nMKT2OP0',
         tip: 'Наклоните корпус немного вперед от спинки сиденья для максимального включения верхнего пучка ягодиц.',
         tip_uz: 'Gavdani o\'rindiqdan biroz oldinga eging, bu dumba yuqorisini faollashtiradi.',
         tip_en: 'Lean torso slightly forward from backrest to isolate upper glute shelf.',
@@ -791,14 +791,14 @@ export const WORKOUT_SPLITS = [
             name: 'Отведение ноги назад на нижнем блоке кроссовера',
             name_uz: 'Krossoverda oyoqni orqaga cho\'zish',
             name_en: 'Cable Glute Kickbacks',
-            video_url: 'https://www.youtube.com/embed/SEdqd1n0cvg',
+            video_url: 'https://www.youtube.com/embed/fF0nMKT2OP0',
             tip: 'Формирование четкой округлой формы и разделения ягодицы и бедра.'
           },
           {
             name: 'Ходьба в полуприседе с фитнес-резинкой (Monster Walk)',
             name_uz: 'Rezinka bilan yarim cho\'kishda yurish',
             name_en: 'Banded Monster Walk',
-            video_url: 'https://www.youtube.com/embed/pvIjsG5Svck',
+            video_url: 'https://www.youtube.com/embed/fF0nMKT2OP0',
             tip: 'Непрерывное статическое напряжение и мощное жжение.'
           }
         ]
@@ -832,7 +832,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 60,
         rpe: 7,
         tempo: '3-0-1-0',
-        video_url: 'https://www.youtube.com/embed/CAwf7n6Luuc',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Тяните лопатки вниз и к позвоночнику. Расправьте плечи и грудную клетку.',
         tip_uz: 'Kuraklarni pastga torting, ko\'krak qafasini oching.',
         tip_en: 'Depress and retract scapulae, lead with chest up, creating visual hourglass taper.',
@@ -841,14 +841,14 @@ export const WORKOUT_SPLITS = [
             name: 'Тяга гантелей в наклоне с упором грудью на скамью',
             name_uz: 'Skameykaga suyanib gantel tortish',
             name_en: 'Chest-Supported Incline Dumbbell Row',
-            video_url: 'https://www.youtube.com/embed/G8l_8chR5BE',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Идеальная фиксация спины и снятие нагрузки с поясницы.'
           },
           {
             name: 'Гравитрон (подтягивания с компенсацией)',
             name_uz: 'Gravitron trenajyorida tortilish',
             name_en: 'Assisted Pull-Up Machine',
-            video_url: 'https://www.youtube.com/embed/CAwf7n6Luuc',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Безопасное развитие силы мышц спины.'
           }
         ]
@@ -866,7 +866,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 60,
         rpe: 8,
         tempo: '2-0-1-0',
-        video_url: 'https://www.youtube.com/embed/qEwKCR5JCog',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Подъем гантелей по плавной дуге вверх, локти слегка направлены вперед (угол 75°).',
         tip_uz: 'Gantellarni yoy bo\'ylab ko\'taring, tirsaklar biroz oldinda bo\'lsin.',
         tip_en: 'Press in a natural arc with elbows slightly angled in scapular plane.',
@@ -875,7 +875,7 @@ export const WORKOUT_SPLITS = [
             name: 'Махи гантелями в стороны стоя',
             name_uz: 'Gantellarni yonga ko\'tarish',
             name_en: 'Standing Dumbbell Lateral Raises',
-            video_url: 'https://www.youtube.com/embed/ttvfGg9d76c',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Создает красивые аккуратные круглые плечи, сужая талию визуально.'
           }
         ]
@@ -893,7 +893,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 7,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/GZbfZ033f74',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Сводите лопатки вместе в конце амплитуды, не округляйте спину.',
         tip_uz: 'Oxirgi nuqtada kuraklarni birlashtiring, orqani bukmang.',
         tip_en: 'Squeeze shoulder blades together at completion without rounding spine.',
@@ -902,7 +902,7 @@ export const WORKOUT_SPLITS = [
             name: 'Тяга каната к лицу (Face Pull)',
             name_uz: 'Face Pull (arqonni yuzga tortish)',
             name_en: 'Face Pull for Posture',
-            video_url: 'https://www.youtube.com/embed/ttvfGg9d76c',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Устраняет сутулость и укрепляет заднюю дельту.'
           }
         ]
@@ -920,7 +920,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 7,
         tempo: '2-0-1-0',
-        video_url: 'https://www.youtube.com/embed/2-LAMcpzODU',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Выполняйте подход на трицепс на блоке и сразу без паузы сгибания с легкими гантелями.',
         tip_uz: 'Triceps mashqidan so\'ng darhol tanaffussiz gantel bilan bitseps qiling.',
         tip_en: 'Perform tricep pushdown immediately followed by controlled dumbbell bicep curls.',
@@ -929,7 +929,7 @@ export const WORKOUT_SPLITS = [
             name: 'Отжимания от скамьи с согнутыми коленями',
             name_uz: 'Skameykadan orqaga press',
             name_en: 'Bench Dips with Bent Knees',
-            video_url: 'https://www.youtube.com/embed/2z8JmcrW-As',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Подтягивает заднюю поверхность рук.'
           }
         ]
@@ -963,7 +963,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 60,
         rpe: 8,
         tempo: '3-1-1-0',
-        video_url: 'https://www.youtube.com/embed/MeIiIdhvXT4',
+        video_url: 'https://www.youtube.com/embed/9KzZD_n2r64',
         tip: 'Держите гантель вертикально перед грудью, колени разводите широко по направлению носков.',
         tip_uz: 'Gantelni ko\'krak oldida tuting, tizzalarni keng yoying.',
         tip_en: 'Hold dumbbell vertically at chest, spread knees wide in line with toes.',
@@ -972,7 +972,7 @@ export const WORKOUT_SPLITS = [
             name: 'Жим ногами с широкой высокой постановкой стоп',
             name_uz: 'Trenajyorda oyoq press keng holda',
             name_en: 'High & Wide Stance Leg Press',
-            video_url: 'https://www.youtube.com/embed/IZxyjW7MPJQ',
+            video_url: 'https://www.youtube.com/embed/9KzZD_n2r64',
             tip: 'Безопасная нагрузка на ноги без компрессии на позвоночник.'
           }
         ]
@@ -990,7 +990,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 60,
         rpe: 8,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/SEdqd1n0cvg',
+        video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
         tip: 'Разверните носки наружу на 45°, округлите верх спины и поднимайтесь ТОЛЬКО за счет сжатия ягодиц.',
         tip_uz: 'Oyoq uchlarini 45° yonga buring, faqat dumba kuchi bilan ko\'tariling.',
         tip_en: 'Flare feet 45°, round thoracic spine, elevate torso solely by flexing glutes.',
@@ -999,7 +999,7 @@ export const WORKOUT_SPLITS = [
             name: 'Шагающие выпады по залу',
             name_uz: 'Qadamlab cho\'kish',
             name_en: 'Walking Dumbbell Lunges',
-            video_url: 'https://www.youtube.com/embed/L8fvypPrzzs',
+            video_url: 'https://www.youtube.com/embed/gT8wN1h469E',
             tip: 'Динамичное движение, формирующее красивую линию бедра.'
           }
         ]
@@ -1017,7 +1017,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/JB2oyawG9KI',
+        video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
         tip: 'Подкручивайте таз наверх, выдыхая весь воздух из легких в верхней точке.',
         tip_uz: 'Tozni yuqoriga buking, yuqorida havoni butunlay chiqaring.',
         tip_en: 'Tuck pelvis upward into chest and exhale fully at top contraction.',
@@ -1026,7 +1026,7 @@ export const WORKOUT_SPLITS = [
             name: '«Мертвый жук» (Deadbug) на коврике',
             name_uz: '«O\'lik qo\'ng\'iz» (Deadbug) mashqi',
             name_en: 'Deadbug Core Activation',
-            video_url: 'https://www.youtube.com/embed/pvIjsG5Svck',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Золотое упражнение для укрепления глубокой поперечной мышцы живота и сужения талии.'
           }
         ]
@@ -1044,7 +1044,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 30,
         rpe: 7,
         tempo: 'Статика',
-        video_url: 'https://www.youtube.com/embed/pvIjsG5Svck',
+        video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
         tip: 'Ягодицы сжаты, живот подтянут к позвоночнику. Держите тело в идеальной прямой линии.',
         tip_uz: 'Qorinni ichga torting, gavdani to\'g\'ri chiziqda saqlang.',
         tip_en: 'Keep glutes tight and belly button pulled to spine without sagging hips.',
@@ -1091,7 +1091,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
+        video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
         tip: 'Пауза в верхней точке на 2 секунды с мощным сжатием ягодиц.',
         tip_uz: 'Yuqori nuqtada 2 soniya qotirib siqing.',
         tip_en: 'Squeeze glutes hard at the top with a 2-second pause.',
@@ -1100,7 +1100,7 @@ export const WORKOUT_SPLITS = [
             name: 'Румынская тяга с гантелями',
             name_uz: 'Gantelli rumincha tortish',
             name_en: 'Dumbbell RDL',
-            video_url: 'https://www.youtube.com/embed/JCXUYuzwNrM',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Отводите таз назад, спина строго прямая.'
           }
         ]
@@ -1118,7 +1118,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '2-0-1-0',
-        video_url: 'https://www.youtube.com/embed/2C-uNgKwPLE',
+        video_url: 'https://www.youtube.com/embed/gT8wN1h469E',
         tip: 'Корпус слегка наклонен вперед для акцента на ягодичную мышцу.',
         tip_uz: 'Gavdani biroz oldinga egib bajaring.',
         tip_en: 'Slight forward lean to activate glute stretch.',
@@ -1127,7 +1127,7 @@ export const WORKOUT_SPLITS = [
             name: 'Выпады назад с гантелями',
             name_uz: 'Orqaga qadam cho\'kish',
             name_en: 'Reverse Lunges',
-            video_url: 'https://www.youtube.com/embed/wrwwXE_x-pQ',
+            video_url: 'https://www.youtube.com/embed/gT8wN1h469E',
             tip: 'Мягкий шаг назад, колено не бьется о пол.'
           }
         ]
@@ -1145,7 +1145,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '3-0-1-0',
-        video_url: 'https://www.youtube.com/embed/JCXUYuzwNrM',
+        video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
         tip: 'Плавное движение вниз за счет отведения таза назад.',
         tip_uz: 'Tozni orqaga tortib sekin tushing.',
         tip_en: 'Smooth descent powered by hip hinge.',
@@ -1154,7 +1154,7 @@ export const WORKOUT_SPLITS = [
             name: 'Сгибания ног в тренажере',
             name_uz: 'Trenajyorda oyoq bukish',
             name_en: 'Lying Leg Curls',
-            video_url: 'https://www.youtube.com/embed/JCXUYuzwNrM',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Изоляция бицепса бедра.'
           }
         ]
@@ -1172,7 +1172,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 30,
         rpe: 7,
         tempo: 'Динамика',
-        video_url: 'https://www.youtube.com/embed/pvIjsG5Svck',
+        video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
         tip: 'Держите тело в одной линии без раскачивания таза.',
         tip_uz: 'Gavdani tebratmasdan tekis tuting.',
         tip_en: 'Keep core braced without rotating hips.',
@@ -1181,7 +1181,7 @@ export const WORKOUT_SPLITS = [
             name: 'Классическая планка на локтях',
             name_uz: 'Klassik planka',
             name_en: 'Forearm Plank',
-            video_url: 'https://www.youtube.com/embed/pvIjsG5Svck',
+            video_url: 'https://www.youtube.com/embed/6W-ViLupxKE',
             tip: 'Статическое напряжение мышц живота.'
           }
         ]
@@ -1215,7 +1215,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '3-0-1-0',
-        video_url: 'https://www.youtube.com/embed/CAwf7n6Luuc',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Красивая осанка и раскрытие грудного отдела.',
         tip_uz: 'Ko\'krak qafasini oching, kuraklarni pastga torting.',
         tip_en: 'Open chest, drive scapulae downward for great posture.',
@@ -1224,7 +1224,7 @@ export const WORKOUT_SPLITS = [
             name: 'Тяга горизонтального блока к поясу',
             name_uz: 'Gorizontal blok tortish',
             name_en: 'Seated Cable Row',
-            video_url: 'https://www.youtube.com/embed/GZbfZ033f74',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Сводите лопатки вместе в конце амплитуды.'
           }
         ]
@@ -1242,7 +1242,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '2-0-1-0',
-        video_url: 'https://www.youtube.com/embed/qEwKCR5JCog',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Укрепление плечевого пояса без перегрузки шеи.',
         tip_uz: 'Bo\'yinni zo\'riqtirmasdan yelkalarni ishlatish.',
         tip_en: 'Smooth overhead press without straining the neck.',
@@ -1251,7 +1251,7 @@ export const WORKOUT_SPLITS = [
             name: 'Махи гантелями через стороны',
             name_uz: 'Gantellarni yonga ko\'tarish',
             name_en: 'Lateral Raises',
-            video_url: 'https://www.youtube.com/embed/ttvfGg9d76c',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Формирование округлости дельт.'
           }
         ]
@@ -1269,7 +1269,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 7,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/GZbfZ033f74',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Сводите лопатки вместе в конце амплитуды.',
         tip_uz: 'Oxirgi nuqtada kuraklarni birlashtiring.',
         tip_en: 'Squeeze scapulae at the finish.',
@@ -1278,7 +1278,7 @@ export const WORKOUT_SPLITS = [
             name: 'Тяга гантели в наклоне',
             name_uz: 'Gantel tortish',
             name_en: 'One-Arm Dumbbell Row',
-            video_url: 'https://www.youtube.com/embed/pYcpY20QaE8',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Глубокая проработка мышц спины.'
           }
         ]
@@ -1296,7 +1296,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '2-0-1-0',
-        video_url: 'https://www.youtube.com/embed/IODxDxX7oi4',
+        video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
         tip: 'Локти под углом 45 градусов к телу.',
         tip_uz: 'Tirsaklar tanaga nisbatan 45 gradusda bo\'lsin.',
         tip_en: 'Elbows at 45° angle to torso.',
@@ -1305,7 +1305,7 @@ export const WORKOUT_SPLITS = [
             name: 'Жим гантелей на наклонной скамье',
             name_uz: 'Qiya skameykada gantel press',
             name_en: 'Incline Dumbbell Press',
-            video_url: 'https://www.youtube.com/embed/8iPEnn-ltC8',
+            video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8',
             tip: 'Укрепление мышц груди и рук.'
           }
         ]
@@ -1339,7 +1339,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: 'Динамичный',
-        video_url: 'https://www.youtube.com/embed/MeIiIdhvXT4',
+        video_url: 'https://www.youtube.com/embed/9KzZD_n2r64',
         tip: 'Слитное взрывное движение: вставая из приседа, сразу выжимайте гантели вверх.',
         tip_uz: 'Cho\'kishdan ko\'tarilayotganda darhol gantellarni yuqoriga bosing.',
         tip_en: 'Fluid explosive motion: power from legs pushes dumbbells overhead.',
@@ -1348,7 +1348,7 @@ export const WORKOUT_SPLITS = [
             name: 'Шагающие выпады с гантелями',
             name_uz: 'Qadamlab cho\'kish',
             name_en: 'Walking Lunges',
-            video_url: 'https://www.youtube.com/embed/wrwwXE_x-pQ',
+            video_url: 'https://www.youtube.com/embed/gT8wN1h469E',
             tip: 'Высокий расход калорий.'
           }
         ]
@@ -1366,7 +1366,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: 'Взрывной',
-        video_url: 'https://www.youtube.com/embed/sSESeQEqu28',
+        video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
         tip: 'Взрывной толчок бедрами вперед, спина прямая. Руки лишь удерживают снаряд.',
         tip_uz: 'Tozni oldinga tez siltang, orqani to\'g\'ri tuting.',
         tip_en: 'Explosive hip snap driving weight forward, arms remain loose pendulums.',
@@ -1375,7 +1375,7 @@ export const WORKOUT_SPLITS = [
             name: 'Бёрпи без отжимания',
             name_uz: 'Byorpi mashqi',
             name_en: 'Burpees',
-            video_url: 'https://www.youtube.com/embed/dZgVxmf6jkA',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Высокоинтенсивный прыжок.'
           }
         ]
@@ -1393,7 +1393,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 30,
         rpe: 8,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/Xyd_fa5zoEU',
+        video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
         tip: 'Поясница прижата к полу, выдох на каждом скручивании.',
         tip_uz: 'Bel polda yopishgan, har bukilishda nafas chiqaring.',
         tip_en: 'Lower back pressed to floor, full exhale on every crunch.',
@@ -1402,7 +1402,7 @@ export const WORKOUT_SPLITS = [
             name: 'Подъем коленей в упоре',
             name_uz: 'Tizzalarni ko\'tarish',
             name_en: 'Hanging Knee Raises',
-            video_url: 'https://www.youtube.com/embed/JB2oyawG9KI',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Проработка низа живота.'
           }
         ]
@@ -1420,7 +1420,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 0,
         rpe: 7,
         tempo: 'Интервалы',
-        video_url: 'https://www.youtube.com/embed/X3q5e1kA4xU',
+        video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
         tip: 'Ходьба под наклоном 10-12% со скоростью 4.5–5.5 км/ч. Не держитесь за поручни руками!',
         tip_uz: 'Qiyalikda 4.5-5.5 km/soat tezlikda yuring, tutqichlardan ushlamang!',
         tip_en: 'Walk at 10-12% incline at 5 km/h. Avoid gripping handrails for optimal burn.',
@@ -1429,7 +1429,7 @@ export const WORKOUT_SPLITS = [
             name: 'Эллиптический тренажер интервалами',
             name_uz: 'Ellips trenajyori',
             name_en: 'Elliptical Intervals',
-            video_url: 'https://www.youtube.com/embed/X3q5e1kA4xU',
+            video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw',
             tip: 'Мягкая нагрузка на суставы.'
           }
         ]
@@ -2038,7 +2038,7 @@ export const WARMUP_EXERCISES_FEMALE = [
     tip: 'Мягкие круговые вращения в суставах, подготовка синовиальной жидкости к нагрузке.',
     tip_uz: 'Bo\'g\'inlarni asta-sekin aylantirish, harakatga tayyorgarlik.',
     tip_en: 'Gentle circular joint rotations, lubricating synovial fluid.',
-    video_url: 'https://www.youtube.com/embed/pvIjsG5Svck'
+    video_url: 'https://www.youtube.com/embed/6W-ViLupxKE'
   },
   {
     id: 'w2',
@@ -2051,7 +2051,7 @@ export const WARMUP_EXERCISES_FEMALE = [
     tip: 'Вращения прямых рук, сведение-разведение лопаток без веса или с легкой резинкой.',
     tip_uz: 'To\'g\'ri qo\'llarni aylantirish, kuraklarni birlashtirish va yoyish.',
     tip_en: 'Arm circles and scapular retraction with light band.',
-    video_url: 'https://www.youtube.com/embed/ttvfGg9d76c'
+    video_url: 'https://www.youtube.com/embed/l-PyAPFq8k8'
   },
   {
     id: 'w3',
@@ -2064,7 +2064,7 @@ export const WARMUP_EXERCISES_FEMALE = [
     tip: '15 глубоких приседаний с фиксацией внизу для раскрытия таза и коленей.',
     tip_uz: '15 marta chuqur cho\'kish, tizzalarni qizdirish.',
     tip_en: '15 deep squats with 1s pause to open hips and warm knees.',
-    video_url: 'https://www.youtube.com/embed/MeIiIdhvXT4'
+    video_url: 'https://www.youtube.com/embed/9KzZD_n2r64'
   },
   {
     id: 'w4',
@@ -2077,7 +2077,7 @@ export const WARMUP_EXERCISES_FEMALE = [
     tip: 'Планка на предплечьях с поочередным выпрямлением рук для включения пресса и стабилизаторов.',
     tip_uz: 'Qorin matbuoti va orqa stabilizatorlarini faollashtirish.',
     tip_en: 'Forearm plank with soft reach to activate core stabilizers.',
-    video_url: 'https://www.youtube.com/embed/pvIjsG5Svck'
+    video_url: 'https://www.youtube.com/embed/pwGLw2xJCGw'
   },
   {
     id: 'w5',
@@ -2090,7 +2090,7 @@ export const WARMUP_EXERCISES_FEMALE = [
     tip: 'Пульс 110-125 уд/мин, разогрев мышц до легкого потоотделения.',
     tip_uz: 'Puls 110-125 urish/daq, mushaklarni harakatga keltirish.',
     tip_en: 'Target HR 110-125 bpm, warming muscle tissue for lifting.',
-    video_url: 'https://www.youtube.com/embed/X3q5e1kA4xU'
+    video_url: 'https://www.youtube.com/embed/6W-ViLupxKE'
   }
 ];
 

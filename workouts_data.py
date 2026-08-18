@@ -186,7 +186,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "10-12",
                 "rest_sec": 75,
-                "video_url": "https://www.youtube.com/embed/kYJ_U4y7tS0",
+                "video_url": "https://www.youtube.com/embed/6W-ViLupxKE",
                 "tip": "Пауза 2 секунды в верхней точке с максимальным прожимом ягодиц. Подбородок прижат к груди."
             },
             {
@@ -196,7 +196,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "10-12 на ногу",
                 "rest_sec": 60,
-                "video_url": "https://www.youtube.com/embed/2C-uNgKwPLE",
+                "video_url": "https://www.youtube.com/embed/gT8wN1h469E",
                 "tip": "Наклоните корпус вперед под 20°, смещая нагрузку строго в рабочую ягодицу."
             },
             {
@@ -206,7 +206,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "10-12",
                 "rest_sec": 60,
-                "video_url": "https://www.youtube.com/embed/JCXUYuzwNrM",
+                "video_url": "https://www.youtube.com/embed/pwGLw2xJCGw",
                 "tip": "Отводите таз назад, гантели скользят вплотную по голеням."
             },
             {
@@ -216,7 +216,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "15-20",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/pvIjsG5Svck",
+                "video_url": "https://www.youtube.com/embed/fF0nMKT2OP0",
                 "tip": "Наклоните корпус слегка вперед для изоляции верхнего пучка ягодиц."
             }
         ]
@@ -239,7 +239,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "10-12",
                 "rest_sec": 60,
-                "video_url": "https://www.youtube.com/embed/CAwf7n6Luuc",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Тяните лопатки вниз, расправляя грудную клетку."
             },
             {
@@ -249,7 +249,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "12",
                 "rest_sec": 60,
-                "video_url": "https://www.youtube.com/embed/qEwKCR5JCog",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Плавный подъем по дуге, локти слегка направлены вперед."
             },
             {
@@ -259,7 +259,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/GZbfZ033f74",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Сводите лопатки вместе в конце движения."
             },
             {
@@ -269,7 +269,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/2-LAMcpzODU",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Тонус рук без увеличения объема."
             }
         ]
@@ -292,7 +292,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "12",
                 "rest_sec": 60,
-                "video_url": "https://www.youtube.com/embed/MeIiIdhvXT4",
+                "video_url": "https://www.youtube.com/embed/9KzZD_n2r64",
                 "tip": "Широкая постановка ног, колени разведены по направлению носков."
             },
             {
@@ -302,7 +302,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "12-15",
                 "rest_sec": 60,
-                "video_url": "https://www.youtube.com/embed/SEdqd1n0cvg",
+                "video_url": "https://www.youtube.com/embed/6W-ViLupxKE",
                 "tip": "Носки развернуты на 45°, подъем ТОЛЬКО за счет сжатия ягодиц."
             },
             {
@@ -312,7 +312,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/JB2oyawG9KI",
+                "video_url": "https://www.youtube.com/embed/pwGLw2xJCGw",
                 "tip": "Подкручивайте таз наверх, выдыхая весь воздух в верхней точке."
             },
             {
@@ -322,7 +322,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "45 сек",
                 "rest_sec": 30,
-                "video_url": "https://www.youtube.com/embed/pvIjsG5Svck",
+                "video_url": "https://www.youtube.com/embed/6W-ViLupxKE",
                 "tip": "Живот подтянут к позвоночнику, прямое положение тела."
             }
         ]
@@ -349,7 +349,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/kYJ_U4y7tS0",
+                "video_url": "https://www.youtube.com/embed/6W-ViLupxKE",
                 "tip": "Пауза в верхней точке на 2 секунды с мощным сжатием ягодиц."
             },
             {
@@ -359,7 +359,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "12 на ногу",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/2C-uNgKwPLE",
+                "video_url": "https://www.youtube.com/embed/gT8wN1h469E",
                 "tip": "Корпус слегка наклонен вперед для акцента на ягодицу."
             },
             {
@@ -369,7 +369,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/JCXUYuzwNrM",
+                "video_url": "https://www.youtube.com/embed/pwGLw2xJCGw",
                 "tip": "Плавное движение вниз за счет отведения таза назад."
             },
             {
@@ -379,7 +379,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "45 сек",
                 "rest_sec": 30,
-                "video_url": "https://www.youtube.com/embed/pvIjsG5Svck",
+                "video_url": "https://www.youtube.com/embed/6W-ViLupxKE",
                 "tip": "Держите тело в одной линии без раскачивания таза."
             }
         ]
@@ -402,7 +402,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/CAwf7n6Luuc",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Красивая осанка и раскрытие грудного отдела."
             },
             {
@@ -412,7 +412,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/qEwKCR5JCog",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Укрепление плечевого пояса без перегрузки шеи."
             },
             {
@@ -422,7 +422,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/GZbfZ033f74",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Сводите лопатки вместе в конце амплитуды."
             },
             {
@@ -432,7 +432,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/IODxDxX7oi4",
+                "video_url": "https://www.youtube.com/embed/l-PyAPFq8k8",
                 "tip": "Локти под углом 45 градусов к телу."
             }
         ]
@@ -455,7 +455,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/MeIiIdhvXT4",
+                "video_url": "https://www.youtube.com/embed/9KzZD_n2r64",
                 "tip": "Слитное взрывное движение."
             },
             {
@@ -465,7 +465,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "20",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/sSESeQEqu28",
+                "video_url": "https://www.youtube.com/embed/pwGLw2xJCGw",
                 "tip": "Взрывной толчок бедрами вперед, спина прямая."
             },
             {
@@ -475,7 +475,7 @@ WORKOUT_SPLITS = [
                 "sets": 3,
                 "reps": "20",
                 "rest_sec": 30,
-                "video_url": "https://www.youtube.com/embed/Xyd_fa5zoEU",
+                "video_url": "https://www.youtube.com/embed/pwGLw2xJCGw",
                 "tip": "Поясница прижата к полу, выдох на подъеме."
             },
             {
@@ -485,7 +485,7 @@ WORKOUT_SPLITS = [
                 "sets": 1,
                 "reps": "20 минут",
                 "rest_sec": 0,
-                "video_url": "https://www.youtube.com/embed/X3q5e1kA4xU",
+                "video_url": "https://www.youtube.com/embed/pwGLw2xJCGw",
                 "tip": "Ходьба под наклоном 10-12% без поддержки руками."
             }
         ]
