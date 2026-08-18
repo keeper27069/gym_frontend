@@ -54,6 +54,13 @@ export const TRANSLATIONS = {
     exit_fullscreen: 'Свернуть',
     open_youtube: 'В YouTube',
     pro_tip: 'Совет тренера',
+    video_error_title: 'Видео недоступно для встроенного просмотра',
+    video_error_desc: 'Автор видео ограничил показ на сторонних сайтах из-за авторских прав. Вы можете легко открыть его напрямую в приложении YouTube или включить альтернативное видео:',
+    open_in_youtube_btn: '▶️ Смотреть прямо в приложении YouTube',
+    switch_to_backup_video: '🔄 Включить запасное видео',
+    search_exercise_youtube: '🔍 Найти технику упражнения в YouTube',
+    video_help_btn: 'Не открывается видео?',
+    video_source_badge: 'YouTube видеоинструкция',
 
     // Live Workout Modal
     live_active_title: 'Активная тренировка',
@@ -188,6 +195,13 @@ export const TRANSLATIONS = {
     exit_fullscreen: 'Kichraytirish',
     open_youtube: "YouTube'da ochish",
     pro_tip: 'Murabbiy maslahati',
+    video_error_title: "Videoni bu yerda ochib bo'lmadi",
+    video_error_desc: "Mualliflik huquqi sababli muallif videoni sayt ichida ko'rsatishni cheklagan. Uni to'g'ridan-to'g'ri YouTube ilovasida ochishingiz yoki muqobil videoni ko'rishingiz mumkin:",
+    open_in_youtube_btn: "▶️ To'g'ridan-to'g'ri YouTube ilovasida ochish",
+    switch_to_backup_video: '🔄 Zaxira videoni yoqish',
+    search_exercise_youtube: "🔍 Mashq texnikasini YouTubedan qidirish",
+    video_help_btn: 'Video ochilmayaptimi?',
+    video_source_badge: "YouTube ko'rsatma",
 
     // Live Workout Modal
     live_active_title: "Faol mashg'ulot",
@@ -322,6 +336,13 @@ export const TRANSLATIONS = {
     exit_fullscreen: 'Exit Fullscreen',
     open_youtube: 'Open in YouTube',
     pro_tip: 'Coach Tip',
+    video_error_title: 'Video Unavailable in Embedded Player',
+    video_error_desc: 'The creator restricted embedding due to copyright or platform settings. You can easily watch it directly in the YouTube app or switch to a backup video:',
+    open_in_youtube_btn: '▶️ Watch Directly in YouTube App',
+    switch_to_backup_video: '🔄 Switch to Backup Video',
+    search_exercise_youtube: '🔍 Search Exercise Form on YouTube',
+    video_help_btn: 'Video not playing?',
+    video_source_badge: 'YouTube Tutorial',
 
     // Live Workout Modal
     live_active_title: 'Active Workout',

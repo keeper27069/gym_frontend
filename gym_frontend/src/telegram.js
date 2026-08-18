@@ -88,3 +88,21 @@ export const hapticSelection = () => {
     // Silently ignore in browser
   }
 }
+
+/**
+ * Safely open external link via Telegram WebApp or browser window
+ * @param {string} url
+ */
+export const openTelegramLink = (url) => {
+  try {
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp?.openLink) {
+      window.Telegram.WebApp.openLink(url)
+      return
+    }
+  } catch (err) {
+    console.warn('Failed to open via Telegram openLink:', err)
+  }
+  if (typeof window !== 'undefined') {
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+}

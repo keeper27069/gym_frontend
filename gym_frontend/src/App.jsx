@@ -64,6 +64,7 @@ import {
   getDirectYoutubeUrl
 } from './workoutsData';
 import { t, getLocalizedField } from './i18n';
+import SmartVideoPlayer from './SmartVideoPlayer';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
@@ -934,31 +935,19 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* INLINE VIDEO PLAYER DEMO (Always ready and expandable) */}
+                    {/* INLINE VIDEO PLAYER DEMO (Always ready and resilient) */}
                     {ex.video_url && isVideoVisible && (
                       <div className="space-y-1.5 animate-in fade-in duration-200">
-                        <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border border-purple-500/30 shadow-inner">
-                          <iframe
-                            src={getYoutubeEmbedUrl(ex.video_url, false)}
-                            title={getLocalizedField(ex, 'name', lang)}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                            allowFullScreen
-                            className="w-full h-full"
-                          />
-                          <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                            <button
-                              onClick={() => {
-                                triggerHaptic('selection');
-                                setVideoModal(ex);
-                                setVideoModalExpanded(true);
-                              }}
-                              className="p-1.5 rounded-xl bg-black/80 text-white hover:text-cyan-400 border border-slate-700/80 backdrop-blur-sm"
-                              title={t('fullscreen_video', lang)}
-                            >
-                              <Maximize2 size={13} />
-                            </button>
-                          </div>
-                        </div>
+                        <SmartVideoPlayer
+                          exercise={ex}
+                          lang={lang}
+                          autoplay={false}
+                          onToggleExpand={() => {
+                            triggerHaptic('selection');
+                            setVideoModal(ex);
+                            setVideoModalExpanded(true);
+                          }}
+                        />
 
                         {/* Coach Tip Banner */}
                         {ex.tip && (
@@ -1958,18 +1947,15 @@ export default function App() {
               </div>
             </div>
 
-            {/* Embedded Responsive Player */}
-            <div className={`w-full rounded-2xl overflow-hidden bg-black border border-slate-800 ${
-              videoModalExpanded ? 'flex-1 min-h-0 aspect-auto' : 'aspect-video'
-            }`}>
-              <iframe
-                src={getYoutubeEmbedUrl(videoModal.video_url, true)}
-                title={getLocalizedField(videoModal, 'name', lang)}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                allowFullScreen
-                className="w-full h-full"
-              />
-            </div>
+            {/* Resilient Smart Video Player */}
+            <SmartVideoPlayer
+              exercise={videoModal}
+              lang={lang}
+              isModal={true}
+              autoplay={true}
+              isExpanded={videoModalExpanded}
+              onToggleExpand={() => setVideoModalExpanded(!videoModalExpanded)}
+            />
 
             {/* Coach Biomechanics Tip */}
             {videoModal.tip && (
