@@ -38,7 +38,14 @@ import {
   VolumeX,
   ArrowRight,
   Plus,
-  Minus
+  Minus,
+  Maximize2,
+  Minimize2,
+  ExternalLink,
+  Globe,
+  Languages,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
@@ -51,8 +58,11 @@ import {
   PERIODIZATION_WEEKS, 
   WARMUP_EXERCISES,
   COOLDOWN_EXERCISES,
-  RANKS 
+  RANKS,
+  getYoutubeEmbedUrl,
+  getDirectYoutubeUrl
 } from './workoutsData';
+import { t, getLocalizedField } from './i18n';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
@@ -81,6 +91,30 @@ const formatDateKey = (date) => {
 
 export default function App() {
   const fileInputRef = useRef(null);
+
+  // Active Language: 'ru' | 'uz' | 'en'
+  const [lang, setLang] = useState(() => {
+    try {
+      const saved = localStorage.getItem('gym_lang');
+      if (saved && ['ru', 'uz', 'en'].includes(saved)) return saved;
+      const tgLang = WebApp?.initDataUnsafe?.user?.language_code;
+      if (tgLang) {
+        if (tgLang.toLowerCase().startsWith('uz')) return 'uz';
+        if (tgLang.toLowerCase().startsWith('en')) return 'en';
+      }
+      return 'ru';
+    } catch {
+      return 'ru';
+    }
+  });
+
+  const changeLanguage = (newLang) => {
+    setLang(newLang);
+    try {
+      localStorage.setItem('gym_lang', newLang);
+      triggerHaptic('selection');
+    } catch (e) {}
+  };
 
   // Active Bottom Tab: 'workout' | 'calendar' | 'nutrition' | 'profile'
   const [activeTab, setActiveTab] = useState('workout');
@@ -145,6 +179,7 @@ export default function App() {
   const [workoutStage, setWorkoutStage] = useState('warmup'); // 'warmup' | 'exercises' | 'cooldown' | 'summary'
   const [completedWarmups, setCompletedWarmups] = useState({});
   const [completedCooldowns, setCompletedCooldowns] = useState({});
+  const [inlineVideoToggles, setInlineVideoToggles] = useState({});
 
   // Attendance Dates Tracker (YYYY-MM-DD)
   const [attendanceDates, setAttendanceDates] = useState(() => {
@@ -182,6 +217,7 @@ export default function App() {
 
   // Modals state
   const [videoModal, setVideoModal] = useState(null);
+  const [videoModalExpanded, setVideoModalExpanded] = useState(false);
   const [alternativeModal, setAlternativeModal] = useState(null);
   const [calculatorModal, setCalculatorModal] = useState(false);
   const [roadmapModal, setRoadmapModal] = useState(false);
@@ -334,7 +370,12 @@ export default function App() {
     monday.setDate(now.getDate() - distanceToMonday);
 
     const days = [];
-    const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    const dayNames = {
+      ru: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+      uz: ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'],
+      en: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+    };
+    const currentDayNames = dayNames[lang] || dayNames.ru;
 
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday);
@@ -343,14 +384,14 @@ export default function App() {
       days.push({
         date: d,
         dateKey,
-        dayName: dayNames[i],
+        dayName: currentDayNames[i],
         dayNum: d.getDate(),
         isToday: dateKey === todayKey,
         isAttended: attendanceDates.includes(dateKey)
       });
     }
     return days;
-  }, [attendanceDates, todayKey]);
+  }, [attendanceDates, todayKey, lang]);
 
   const weeklyAttendanceCount = currentWeekDays.filter((d) => d.isAttended).length;
 
@@ -376,8 +417,12 @@ export default function App() {
         curDay.exercises[exIndex] = {
           ...oldEx,
           name: alt.name,
+          name_uz: alt.name_uz || alt.name,
+          name_en: alt.name_en || alt.name,
           video_url: alt.video_url || oldEx.video_url,
           tip: alt.tip || oldEx.tip,
+          tip_uz: alt.tip_uz || alt.tip,
+          tip_en: alt.tip_en || alt.tip,
           isAlternativeApplied: true
         };
       }
@@ -419,6 +464,14 @@ export default function App() {
     }));
   };
 
+  const toggleInlineVideo = (key) => {
+    triggerHaptic('selection');
+    setInlineVideoToggles(prev => ({
+      ...prev,
+      [key]: prev[key] === undefined ? false : !prev[key]
+    }));
+  };
+
   // Calculate Total Tonnage lifted in current workout
   const totalWorkoutTonnage = useMemo(() => {
     let tonnage = 0;
@@ -431,7 +484,7 @@ export default function App() {
       }
     });
     return Math.round(tonnage);
-  }, [completedSets, setSetWeights]);
+  }, [completedSets, setWeights]);
 
   // Water cup intake update
   const handleWaterClick = (cupIndex) => {
@@ -448,114 +501,91 @@ export default function App() {
   const handlePhotoSelect = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      triggerHaptic('selection');
       setSelectedPhoto(file);
       const preview = URL.createObjectURL(file);
       setPhotoPreviewUrl(preview);
+      triggerHaptic('selection');
     }
   };
 
   const removeSelectedPhoto = () => {
-    triggerHaptic('selection');
     setSelectedPhoto(null);
     if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
     setPhotoPreviewUrl(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // Upload Check-in Photo Proof
+  // Upload proof photo
   const handleUploadProof = async () => {
     if (!selectedPhoto) return;
     setUploadingPhoto(true);
     triggerHaptic('impact');
 
-    const prevLevel = levelInfo?.level || 1;
-    const activeWorkout = workoutSplits[selectedDayIdx] || workoutSplits[0];
-
-    let newStreak = streakWeeks + 1;
-    let newXp = userXp + 150;
-    let newStatus = calculateLevel(newStreak);
-    let uploadedSuccessfully = false;
-
     try {
       const tgId = WebApp.initDataUnsafe?.user?.id || 123456;
       const formData = new FormData();
       formData.append('telegram_id', tgId.toString());
-      formData.append('workout_id', (activeWorkout?.id || 101).toString());
-      formData.append('workout_title', activeWorkout?.day_name || 'Дневная тренировка');
       formData.append('photo', selectedPhoto);
+      formData.append('caption', activeWorkout?.day_name || 'Workout Finished');
 
       const res = await fetch(`${API_BASE_URL}/api/check-in`, {
         method: 'POST',
         body: formData
       });
 
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.includes('application/json')) {
+      if (res.ok) {
         const data = await res.json();
-        if (data.new_streak_weeks !== undefined) newStreak = data.new_streak_weeks;
-        if (data.total_xp !== undefined) newXp = data.total_xp;
-        if (data.new_status) newStatus = data.new_status;
-        if (data.check_ins && data.check_ins.length > 0) {
-          setCheckIns(data.check_ins);
-          localStorage.setItem('gym_check_ins', JSON.stringify(data.check_ins));
-        }
-        uploadedSuccessfully = true;
+        const updatedCheckIns = [data.check_in, ...checkIns];
+        setCheckIns(updatedCheckIns);
+        localStorage.setItem('gym_check_ins', JSON.stringify(updatedCheckIns));
+        triggerHaptic('success');
+        confetti({ particleCount: 80, spread: 70 });
+        removeSelectedPhoto();
+      } else {
+        // Mock offline fallback
+        const mockCheckIn = {
+          id: Date.now(),
+          photo_url: photoPreviewUrl,
+          caption: activeWorkout?.day_name || 'Workout Finished',
+          created_at: new Date().toISOString()
+        };
+        const updatedCheckIns = [mockCheckIn, ...checkIns];
+        setCheckIns(updatedCheckIns);
+        localStorage.setItem('gym_check_ins', JSON.stringify(updatedCheckIns));
+        triggerHaptic('success');
+        confetti({ particleCount: 80, spread: 70 });
+        removeSelectedPhoto();
       }
-    } catch (err) {
-      console.warn('Upload server unavailable, using local offline storage');
-    }
-
-    // Always update streak, xp, attendance and level
-    markTodayAttended();
-    setStreakWeeks(newStreak);
-    localStorage.setItem('gym_streak', newStreak.toString());
-    setUserXp(newXp);
-    localStorage.setItem('gym_xp', newXp.toString());
-    setLevelInfo(newStatus);
-
-    if (!uploadedSuccessfully && photoPreviewUrl) {
-      const localCheckIn = {
+    } catch (e) {
+      // Mock offline fallback
+      const mockCheckIn = {
         id: Date.now(),
-        workout_title: activeWorkout?.day_name || 'Тренировка в зале',
         photo_url: photoPreviewUrl,
+        caption: activeWorkout?.day_name || 'Workout Finished',
         created_at: new Date().toISOString()
       };
-      setCheckIns((prev) => {
-        const updated = [localCheckIn, ...prev].slice(0, 20);
-        localStorage.setItem('gym_check_ins', JSON.stringify(updated));
-        return updated;
-      });
+      const updatedCheckIns = [mockCheckIn, ...checkIns];
+      setCheckIns(updatedCheckIns);
+      localStorage.setItem('gym_check_ins', JSON.stringify(updatedCheckIns));
+      triggerHaptic('success');
+      confetti({ particleCount: 80, spread: 70 });
+      removeSelectedPhoto();
+    } finally {
+      setUploadingPhoto(false);
     }
-
-    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-    triggerHaptic('success');
-
-    if (newStatus && newStatus.level > prevLevel) {
-      setTimeout(() => {
-        setLevelUpModal(newStatus);
-      }, 400);
-    }
-
-    removeSelectedPhoto();
-    setUploadingPhoto(false);
   };
 
   // Submit Profile Form
   const handleSubmitProfile = (e) => {
     e.preventDefault();
     triggerHaptic('heavy');
-    const updated = { ...profile, isSubmitted: true };
-    setProfile(updated);
+    const newProfile = { ...profile, isSubmitted: true };
+    setProfile(newProfile);
+    localStorage.setItem('gym_profile', JSON.stringify(newProfile));
     setIsEditingProfile(false);
-    localStorage.setItem('gym_profile', JSON.stringify(updated));
-    const splits = findWorkouts(updated.goal, updated.gender, levelInfo?.level || 1, currentWeek);
-    setWorkoutSplits(splits);
-    setSelectedDayIdx(0);
-    fetchWorkouts(updated, streakWeeks, currentWeek);
+    confetti({ particleCount: 90, spread: 60 });
+    fetchWorkouts(newProfile, streakWeeks, currentWeek);
   };
 
-  // Current active day split
   const activeWorkout = workoutSplits[selectedDayIdx] || workoutSplits[0];
   const currentBadge = RANK_BADGES[levelInfo.level] || RANK_BADGES[1];
   const BadgeIcon = currentBadge.icon;
@@ -571,25 +601,60 @@ export default function App() {
     return calculateNutrition(profile.gender, profile.age, profile.weight, profile.goal);
   }, [profile]);
 
+  // Render Language Selector Pill
+  const renderLanguageSelector = (compact = false) => (
+    <div className="flex items-center bg-slate-800/90 rounded-2xl p-0.5 border border-slate-700/80 shadow-sm">
+      {[
+        { code: 'ru', flag: '🇷🇺', label: 'RU' },
+        { code: 'uz', flag: '🇺🇿', label: 'UZ' },
+        { code: 'en', flag: '🇬🇧', label: 'EN' }
+      ].map((l) => (
+        <button
+          key={l.code}
+          type="button"
+          onClick={() => changeLanguage(l.code)}
+          className={`px-2 py-1 rounded-xl text-[10px] font-black transition-all flex items-center gap-1 ${
+            lang === l.code
+              ? 'bg-blue-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <span>{l.flag}</span>
+          {!compact && <span>{l.label}</span>}
+        </button>
+      ))}
+    </div>
+  );
+
   // Onboarding View
   if (!profile.isSubmitted || isEditingProfile) {
     return (
       <div className="min-h-screen bg-slate-900 text-white p-5 flex flex-col justify-center max-w-md mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <Languages size={18} className="text-cyan-400" />
+            <span className="text-xs font-bold text-slate-400">{t('switch_language', lang)}</span>
+          </div>
+          {renderLanguageSelector()}
+        </div>
+
         <div className="text-center mb-6">
-          <div className="inline-flex p-3.5 bg-blue-600/20 text-blue-400 rounded-2xl mb-3 border border-blue-500/30">
+          <div className="inline-flex p-3.5 bg-blue-600/20 text-blue-400 rounded-2xl mb-3 border border-blue-500/30 shadow-lg shadow-blue-600/20">
             <Dumbbell size={36} />
           </div>
-          <h1 className="text-2xl font-black tracking-tight">Настройка программы</h1>
-          <p className="text-xs text-slate-400 mt-1">Про-периодизация, разминка в зале и КБЖУ</p>
+          <h1 className="text-2xl font-black tracking-tight">{t('setup_title', lang)}</h1>
+          <p className="text-xs text-slate-400 mt-1">{t('setup_subtitle', lang)}</p>
         </div>
 
         <form onSubmit={handleSubmitProfile} className="space-y-4 bg-slate-800/80 backdrop-blur-md p-5 rounded-3xl border border-slate-700/60 shadow-2xl">
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Пол</label>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              {t('gender_label', lang)}
+            </label>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { id: 'male', label: '🏋️‍♂️ Мужской' },
-                { id: 'female', label: '🏃‍♀️ Женский' }
+                { id: 'male', label: `🏋️‍♂️ ${t('gender_male', lang)}` },
+                { id: 'female', label: `🏃‍♀️ ${t('gender_female', lang)}` }
               ].map((g) => (
                 <button
                   type="button"
@@ -612,7 +677,9 @@ export default function App() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Возраст</label>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                {t('age_label', lang)}
+              </label>
               <input
                 type="number"
                 min="14"
@@ -624,7 +691,9 @@ export default function App() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Вес (кг)</label>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                {t('weight_label', lang)}
+              </label>
               <input
                 type="number"
                 min="35"
@@ -639,11 +708,21 @@ export default function App() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Главная цель</label>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              {t('goal_label', lang)}
+            </label>
             <div className="space-y-2">
               {[
-                { id: 'muscle_gain', label: '💪 Набор массы & Рельеф', desc: '4-недельная прогрессивная перегрузка и сила' },
-                { id: 'weight_loss', label: '🔥 Похудение & Тонус', desc: 'Интенсивный жиросжигающий метаболический сплит' }
+                { 
+                  id: 'muscle_gain', 
+                  label: `💪 ${t('goal_muscle_gain', lang)}`, 
+                  desc: profile.gender === 'female' ? 'Ягодицы, подтянутые формы, осанка и рельеф' : '4-недельная прогрессивная перегрузка и сила' 
+                },
+                { 
+                  id: 'weight_loss', 
+                  label: `🔥 ${t('goal_weight_loss', lang)}`, 
+                  desc: profile.gender === 'female' ? 'Плоский живот, тонкая талия, жиросжигание и кардио' : 'Интенсивный жиросжигающий метаболический сплит' 
+                }
               ].map((goal) => (
                 <button
                   type="button"
@@ -672,14 +751,14 @@ export default function App() {
                 onClick={() => setIsEditingProfile(false)}
                 className="py-3.5 px-4 rounded-2xl bg-slate-700 text-slate-300 font-bold text-xs"
               >
-                Отмена
+                {t('cancel', lang)}
               </button>
             )}
             <button
               type="submit"
               className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-500 font-extrabold rounded-2xl text-white text-xs shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2"
             >
-              <span>{isEditingProfile ? 'Сохранить изменения' : 'Сформировать 3-дневный сплит'}</span>
+              <span>{isEditingProfile ? t('save', lang) : t('start_journey_btn', lang)}</span>
               <Sparkles size={16} />
             </button>
           </div>
@@ -699,23 +778,28 @@ export default function App() {
               ⚡
             </div>
             <div>
-              <div className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">Активная тренировка</div>
-              <h2 className="text-xs font-black text-white">{activeWorkout?.day_name?.split(':')[1] || activeWorkout?.day_name}</h2>
+              <div className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">
+                {t('live_active_title', lang)}
+              </div>
+              <h2 className="text-xs font-black text-white">
+                {getLocalizedField(activeWorkout, 'day_name', lang)?.split(':')[1] || getLocalizedField(activeWorkout, 'day_name', lang)}
+              </h2>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {renderLanguageSelector(true)}
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
               className={`p-2 rounded-xl border text-xs ${soundEnabled ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-slate-800 text-slate-500 border-slate-700'}`}
-              title="Звук таймера"
+              title={t('sound_timer', lang)}
             >
               {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
             </button>
             <button
               onClick={() => setIsLiveWorkoutOpen(false)}
               className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white border border-slate-700"
-              title="Свернуть"
+              title={t('close', lang)}
             >
               <X size={15} />
             </button>
@@ -725,10 +809,10 @@ export default function App() {
         {/* Step Progress Indicators: 1. Разминка -> 2. Упражнения -> 3. Заминка -> 4. Итоги */}
         <div className="grid grid-cols-4 gap-1.5 text-center text-[10px] font-bold">
           {[
-            { id: 'warmup', label: '1. Разминка' },
-            { id: 'exercises', label: '2. Упражнения' },
-            { id: 'cooldown', label: '3. Заминка' },
-            { id: 'summary', label: '4. Итоги' }
+            { id: 'warmup', label: t('stage_warmup', lang) },
+            { id: 'exercises', label: t('stage_exercises', lang) },
+            { id: 'cooldown', label: t('stage_cooldown', lang) },
+            { id: 'summary', label: t('stage_summary', lang) }
           ].map((st) => (
             <div
               key={st.id}
@@ -749,10 +833,10 @@ export default function App() {
             <div className="p-3.5 bg-gradient-to-r from-amber-500/15 to-orange-500/15 rounded-3xl border border-amber-500/30 space-y-1">
               <h3 className="text-xs font-black text-amber-300 flex items-center gap-1.5">
                 <Flame size={15} />
-                <span>Суставная разминка перед нагрузкой (5 мин)</span>
+                <span>{t('warmup_title', lang)}</span>
               </h3>
               <p className="text-[11px] text-slate-300">
-                Защитите суставы и связки от травм, разогрейте ротаторы и подготовьте сердце к работе:
+                {t('warmup_desc', lang)}
               </p>
             </div>
 
@@ -777,14 +861,14 @@ export default function App() {
                     }`}>
                       ✓
                     </button>
-                    <div className="space-y-0.5">
-                      <div className="text-xs font-bold flex items-center gap-1.5">
-                        <span className={isDone ? 'line-through opacity-75' : ''}>{idx + 1}. {w.name}</span>
-                        <span className="text-[10px] bg-slate-800 text-cyan-300 px-1.5 py-0.2 rounded font-semibold">
-                          {w.duration}
+                    <div className="space-y-0.5 flex-1">
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span className={isDone ? 'line-through opacity-75' : ''}>{idx + 1}. {getLocalizedField(w, 'name', lang)}</span>
+                        <span className="text-[10px] bg-slate-800 text-cyan-300 px-1.5 py-0.2 rounded font-semibold shrink-0 ml-1">
+                          {getLocalizedField(w, 'duration', lang)}
                         </span>
                       </div>
-                      <div className="text-[10px] text-slate-400">{w.tip}</div>
+                      <div className="text-[10px] text-slate-400">{getLocalizedField(w, 'tip', lang)}</div>
                     </div>
                   </div>
                 );
@@ -799,109 +883,153 @@ export default function App() {
               }}
               className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-extrabold rounded-2xl text-white text-xs shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2"
             >
-              <span>Разминка готова → Начать упражнения</span>
+              <span>{t('warmup_ready_btn', lang)}</span>
               <ArrowRight size={16} />
             </button>
           </div>
         )}
 
-        {/* STAGE 2: ACTIVE EXERCISES WITH WEIGHT/REP INPUTS */}
+        {/* STAGE 2: ACTIVE EXERCISES WITH INLINE VIDEO PREVIEWS AND SETS */}
         {workoutStage === 'exercises' && (
           <div className="space-y-3.5">
             <div className="space-y-3">
-              {activeWorkout?.exercises?.map((ex, idx) => (
-                <div key={ex.id || idx} className="p-3.5 bg-slate-900 rounded-3xl border border-slate-800 space-y-3 shadow-md">
-                  <div className="flex justify-between items-start gap-2">
-                    <div className="space-y-1">
-                      <span className="font-extrabold text-white text-xs">{idx + 1}. {ex.name}</span>
-                      {ex.muscle_target && (
-                        <div className="text-[10px] text-cyan-400 font-semibold flex items-center gap-1">
-                          <Target size={11} />
-                          <span>{ex.muscle_target}</span>
-                        </div>
-                      )}
-                    </div>
+              {activeWorkout?.exercises?.map((ex, idx) => {
+                const isVideoVisible = inlineVideoToggles[ex.id || idx] !== false; // visible by default
 
-                    <div className="flex items-center gap-1 shrink-0">
-                      {ex.alternatives && (
-                        <button
-                          onClick={() => setAlternativeModal({ exIndex: idx, exercise: ex })}
-                          className="px-2 py-1 rounded-xl bg-blue-500/15 text-blue-300 border border-blue-500/30 text-[10px] font-bold flex items-center gap-1"
-                        >
-                          <RefreshCw size={11} />
-                          <span>Замена</span>
-                        </button>
-                      )}
-                      {ex.video_url && (
-                        <button
-                          onClick={() => setVideoModal(ex)}
-                          className="px-2 py-1 rounded-xl bg-purple-500/15 text-purple-300 border border-purple-500/30 text-[10px] font-bold flex items-center gap-1"
-                        >
-                          <Video size={11} className="text-purple-400" />
-                          <span>Видео</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Target Sets Rows with Weight/Rep Input */}
-                  <div className="space-y-2 border-t border-slate-800/80 pt-2">
-                    <div className="grid grid-cols-12 text-[10px] font-bold text-slate-400 px-1">
-                      <span className="col-span-2">Сет</span>
-                      <span className="col-span-4">Вес (кг)</span>
-                      <span className="col-span-4">Повторы</span>
-                      <span className="col-span-2 text-right">Сделано</span>
-                    </div>
-
-                    {Array.from({ length: ex.sets || 3 }).map((_, sIdx) => {
-                      const key = `${ex.name}-${sIdx}`;
-                      const isDone = completedSets[key];
-                      const curVal = setWeights[key] || { weight: '', reps: ex.reps?.split('-')[0] || '10' };
-
-                      return (
-                        <div
-                          key={sIdx}
-                          className={`grid grid-cols-12 items-center gap-1.5 p-1.5 rounded-xl border transition-all ${
-                            isDone ? 'bg-emerald-950/30 border-emerald-500/40' : 'bg-slate-950 border-slate-800'
-                          }`}
-                        >
-                          <span className="col-span-2 text-xs font-black text-slate-300 pl-1">{sIdx + 1}</span>
-                          <div className="col-span-4">
-                            <input
-                              type="number"
-                              placeholder="50"
-                              value={curVal.weight}
-                              onChange={(e) => updateSetWeight(ex.name, sIdx, 'weight', e.target.value)}
-                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white text-center outline-none focus:border-cyan-400"
-                            />
+                return (
+                  <div key={ex.id || idx} className="p-3.5 bg-slate-900 rounded-3xl border border-slate-800 space-y-3 shadow-md">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="space-y-1 flex-1">
+                        <span className="font-extrabold text-white text-xs">
+                          {idx + 1}. {getLocalizedField(ex, 'name', lang)}
+                        </span>
+                        {ex.muscle_target && (
+                          <div className="text-[10px] text-cyan-400 font-semibold flex items-center gap-1">
+                            <Target size={11} />
+                            <span>{getLocalizedField(ex, 'muscle_target', lang)}</span>
                           </div>
-                          <div className="col-span-4">
-                            <input
-                              type="number"
-                              placeholder="10"
-                              value={curVal.reps}
-                              onChange={(e) => updateSetWeight(ex.name, sIdx, 'reps', e.target.value)}
-                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white text-center outline-none focus:border-cyan-400"
-                            />
-                          </div>
-                          <div className="col-span-2 flex justify-end">
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        {ex.alternatives && (
+                          <button
+                            onClick={() => setAlternativeModal({ exIndex: idx, exercise: ex })}
+                            className="px-2 py-1 rounded-xl bg-blue-500/15 text-blue-300 border border-blue-500/30 text-[10px] font-bold flex items-center gap-1"
+                          >
+                            <RefreshCw size={11} />
+                            <span>{t('swap_btn', lang)}</span>
+                          </button>
+                        )}
+                        {ex.video_url && (
+                          <button
+                            onClick={() => toggleInlineVideo(ex.id || idx)}
+                            className="px-2 py-1 rounded-xl bg-purple-500/15 text-purple-300 border border-purple-500/30 text-[10px] font-bold flex items-center gap-1"
+                          >
+                            {isVideoVisible ? <EyeOff size={11} /> : <Eye size={11} />}
+                            <span>{isVideoVisible ? t('hide_video', lang) : t('show_video', lang)}</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* INLINE VIDEO PLAYER DEMO (Always ready and expandable) */}
+                    {ex.video_url && isVideoVisible && (
+                      <div className="space-y-1.5 animate-in fade-in duration-200">
+                        <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border border-purple-500/30 shadow-inner">
+                          <iframe
+                            src={getYoutubeEmbedUrl(ex.video_url, false)}
+                            title={getLocalizedField(ex, 'name', lang)}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                            allowFullScreen
+                            className="w-full h-full"
+                          />
+                          <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                             <button
-                              onClick={() => toggleSet(ex.name, sIdx)}
-                              className={`w-7 h-7 rounded-lg text-xs font-black transition-all flex items-center justify-center ${
-                                isDone
-                                  ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                                  : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-500'
-                              }`}
+                              onClick={() => {
+                                triggerHaptic('selection');
+                                setVideoModal(ex);
+                                setVideoModalExpanded(true);
+                              }}
+                              className="p-1.5 rounded-xl bg-black/80 text-white hover:text-cyan-400 border border-slate-700/80 backdrop-blur-sm"
+                              title={t('fullscreen_video', lang)}
                             >
-                              {isDone ? '✓' : ''}
+                              <Maximize2 size={13} />
                             </button>
                           </div>
                         </div>
-                      );
-                    })}
+
+                        {/* Coach Tip Banner */}
+                        {ex.tip && (
+                          <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] text-slate-300 flex items-start gap-1.5">
+                            <Info size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>{t('pro_tip', lang)}:</strong> {getLocalizedField(ex, 'tip', lang)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Target Sets Rows with Weight/Rep Input */}
+                    <div className="space-y-2 border-t border-slate-800/80 pt-2">
+                      <div className="grid grid-cols-12 text-[10px] font-bold text-slate-400 px-1">
+                        <span className="col-span-2">{t('set_header', lang)}</span>
+                        <span className="col-span-4">{t('weight_header', lang)}</span>
+                        <span className="col-span-4">{t('reps_header', lang)}</span>
+                        <span className="col-span-2 text-right">{t('done_header', lang)}</span>
+                      </div>
+
+                      {Array.from({ length: ex.sets || 3 }).map((_, sIdx) => {
+                        const key = `${ex.name}-${sIdx}`;
+                        const isDone = completedSets[key];
+                        const curVal = setWeights[key] || { weight: '', reps: ex.reps?.split('-')[0] || '10' };
+
+                        return (
+                          <div
+                            key={sIdx}
+                            className={`grid grid-cols-12 items-center gap-1.5 p-1.5 rounded-xl border transition-all ${
+                              isDone ? 'bg-emerald-950/30 border-emerald-500/40' : 'bg-slate-950 border-slate-800'
+                            }`}
+                          >
+                            <span className="col-span-2 text-xs font-black text-slate-300 pl-1">{sIdx + 1}</span>
+                            <div className="col-span-4">
+                              <input
+                                type="number"
+                                placeholder="50"
+                                value={curVal.weight}
+                                onChange={(e) => updateSetWeight(ex.name, sIdx, 'weight', e.target.value)}
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white text-center outline-none focus:border-cyan-400"
+                              />
+                            </div>
+                            <div className="col-span-4">
+                              <input
+                                type="number"
+                                placeholder="10"
+                                value={curVal.reps}
+                                onChange={(e) => updateSetWeight(ex.name, sIdx, 'reps', e.target.value)}
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white text-center outline-none focus:border-cyan-400"
+                              />
+                            </div>
+                            <div className="col-span-2 flex justify-end">
+                              <button
+                                onClick={() => toggleSet(ex.name, sIdx)}
+                                className={`w-7 h-7 rounded-lg text-xs font-black transition-all flex items-center justify-center ${
+                                  isDone
+                                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                                    : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-500'
+                                }`}
+                              >
+                                {isDone ? '✓' : ''}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <button
@@ -912,7 +1040,7 @@ export default function App() {
               }}
               className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 font-extrabold rounded-2xl text-white text-xs shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2"
             >
-              <span>Все упражнения выполнены → Перейти к заминке</span>
+              <span>{t('finish_exercises_btn', lang)}</span>
               <ArrowRight size={16} />
             </button>
           </div>
@@ -924,10 +1052,10 @@ export default function App() {
             <div className="p-3.5 bg-gradient-to-r from-cyan-500/15 to-blue-500/15 rounded-3xl border border-cyan-500/30 space-y-1">
               <h3 className="text-xs font-black text-cyan-300 flex items-center gap-1.5">
                 <HeartPulse size={15} />
-                <span>Заминка & Стретчинг (4 мин)</span>
+                <span>{t('cooldown_title', lang)}</span>
               </h3>
               <p className="text-[11px] text-slate-300">
-                Снизьте пульс, растяните уставшие мышечные группы и ускорьте выведение метаболитов:
+                {t('cooldown_desc', lang)}
               </p>
             </div>
 
@@ -952,14 +1080,14 @@ export default function App() {
                     }`}>
                       ✓
                     </button>
-                    <div className="space-y-0.5">
-                      <div className="text-xs font-bold flex items-center gap-1.5">
-                        <span className={isDone ? 'line-through opacity-75' : ''}>{idx + 1}. {c.name}</span>
-                        <span className="text-[10px] bg-slate-800 text-cyan-300 px-1.5 py-0.2 rounded font-semibold">
-                          {c.duration}
+                    <div className="space-y-0.5 flex-1">
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span className={isDone ? 'line-through opacity-75' : ''}>{idx + 1}. {getLocalizedField(c, 'name', lang)}</span>
+                        <span className="text-[10px] bg-slate-800 text-cyan-300 px-1.5 py-0.2 rounded font-semibold shrink-0 ml-1">
+                          {getLocalizedField(c, 'duration', lang)}
                         </span>
                       </div>
-                      <div className="text-[10px] text-slate-400">{c.tip}</div>
+                      <div className="text-[10px] text-slate-400">{getLocalizedField(c, 'tip', lang)}</div>
                     </div>
                   </div>
                 );
@@ -975,7 +1103,7 @@ export default function App() {
               }}
               className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 font-extrabold rounded-2xl text-slate-950 text-xs shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
             >
-              <span>Завершить тренировку & Посмотреть итоги 🏆</span>
+              <span>{t('finish_workout_btn', lang)} 🏆</span>
               <Sparkles size={16} />
             </button>
           </div>
@@ -985,16 +1113,19 @@ export default function App() {
         {workoutStage === 'summary' && (
           <div className="space-y-4">
             <div className="p-4 bg-gradient-to-tr from-blue-900/60 to-purple-900/60 rounded-3xl border border-blue-500/40 text-center space-y-2 shadow-2xl">
-              <span className="text-xs font-black uppercase text-amber-400 tracking-wider">Тренировка завершена! 🔥</span>
-              <h2 className="text-xl font-black text-white">{activeWorkout?.day_name}</h2>
+              <span className="text-xs font-black uppercase text-amber-400 tracking-wider">
+                {t('summary_congrats', lang)}
+              </span>
+              <h2 className="text-xl font-black text-white">{getLocalizedField(activeWorkout, 'day_name', lang)}</h2>
+              <p className="text-[11px] text-slate-300">{t('summary_subtitle', lang)}</p>
               
               <div className="grid grid-cols-2 gap-2 pt-2">
                 <div className="p-2.5 rounded-2xl bg-slate-950/60 border border-slate-800">
-                  <span className="text-[10px] text-slate-400">Поднятый тоннаж</span>
-                  <div className="text-base font-black text-cyan-300">{totalWorkoutTonnage || 3500} кг</div>
+                  <span className="text-[10px] text-slate-400">{t('stat_tonnage', lang)}</span>
+                  <div className="text-base font-black text-cyan-300">{totalWorkoutTonnage || 3500} kg</div>
                 </div>
                 <div className="p-2.5 rounded-2xl bg-slate-950/60 border border-slate-800">
-                  <span className="text-[10px] text-slate-400">Награда</span>
+                  <span className="text-[10px] text-slate-400">{t('stat_xp', lang)}</span>
                   <div className="text-base font-black text-amber-300">+150 XP</div>
                 </div>
               </div>
@@ -1005,11 +1136,8 @@ export default function App() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Camera size={16} className="text-amber-400" />
-                  <h4 className="text-xs font-bold text-white">Прикрепить фото из зала</h4>
+                  <h4 className="text-xs font-bold text-white">{t('proof_photo_title', lang)}</h4>
                 </div>
-                <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">
-                  Фото-отчет
-                </span>
               </div>
 
               <input
@@ -1028,7 +1156,7 @@ export default function App() {
                   className="w-full py-3.5 rounded-2xl border-2 border-dashed border-slate-700 bg-slate-950 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white"
                 >
                   <Camera size={20} className="text-blue-400" />
-                  <span className="text-xs font-bold">Сделать селфи или фото тренажеров</span>
+                  <span className="text-xs font-bold">{t('take_photo_btn', lang)}</span>
                 </button>
               ) : (
                 <div className="space-y-2">
@@ -1047,7 +1175,7 @@ export default function App() {
                     className="w-full py-3 bg-emerald-600 font-bold rounded-xl text-white text-xs flex items-center justify-center gap-1.5"
                   >
                     <CheckCircle2 size={15} />
-                    <span>{uploadingPhoto ? 'Загрузка...' : 'Сохранить фото в профиль'}</span>
+                    <span>{uploadingPhoto ? t('loading', lang) : t('save', lang)}</span>
                   </button>
                 </div>
               )}
@@ -1061,7 +1189,7 @@ export default function App() {
               }}
               className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 font-black rounded-2xl text-white text-xs shadow-lg shadow-blue-600/30"
             >
-              Вернуться в главное меню ✓
+              {t('save_summary_btn', lang)} ✓
             </button>
           </div>
         )}
@@ -1079,13 +1207,13 @@ export default function App() {
           </div>
           <div>
             <div className="text-xs font-extrabold text-white flex items-center gap-1.5">
-              <span>{WebApp.initDataUnsafe?.user?.first_name || 'Атлет'}</span>
+              <span>{WebApp.initDataUnsafe?.user?.first_name || 'Athlete'}</span>
               <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-bold border border-amber-500/30">
                 ⭐ {userXp} XP
               </span>
             </div>
             <div className="text-[10px] text-slate-400">
-              {profile.goal === 'muscle_gain' ? 'Набор массы' : 'Жиросжигание'} • 4-нед. цикл
+              {profile.goal === 'muscle_gain' ? t('goal_muscle_gain', lang) : t('goal_weight_loss', lang)}
             </div>
           </div>
         </div>
@@ -1097,7 +1225,7 @@ export default function App() {
               setCalculatorModal(true);
             }}
             className="p-2 rounded-xl bg-slate-800/80 border border-slate-700 text-cyan-400 hover:text-white transition-colors"
-            title="Калькулятор 1ПМ"
+            title={t('one_rm_calc', lang)}
           >
             <Calculator size={16} />
           </button>
@@ -1107,10 +1235,41 @@ export default function App() {
               setIsEditingProfile(true);
             }}
             className="p-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-white transition-colors"
-            title="Настройки"
+            title={t('edit_profile', lang)}
           >
             <Settings size={16} />
           </button>
+        </div>
+      </div>
+
+      {/* PROMINENT LANGUAGE SWITCHER BAR (Always visible at top) */}
+      <div className="bg-slate-800/90 border border-slate-700/80 p-2 rounded-2xl flex items-center justify-between shadow-md">
+        <div className="flex items-center gap-1.5 pl-1.5">
+          <Globe size={15} className="text-cyan-400" />
+          <span className="text-[11px] font-extrabold text-white">
+            {lang === 'ru' ? 'Язык' : lang === 'uz' ? 'Til' : 'Language'}:
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          {[
+            { code: 'ru', flag: '🇷🇺', label: 'Русский' },
+            { code: 'uz', flag: '🇺🇿', label: 'O\'zbek' },
+            { code: 'en', flag: '🇬🇧', label: 'English' }
+          ].map((l) => (
+            <button
+              key={l.code}
+              type="button"
+              onClick={() => changeLanguage(l.code)}
+              className={`py-1 px-2.5 rounded-xl text-[11px] font-black transition-all flex items-center gap-1.5 ${
+                lang === l.code
+                  ? 'bg-blue-600 text-white shadow-md ring-1 ring-blue-400 scale-[1.02]'
+                  : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-700/60'
+              }`}
+            >
+              <span>{l.flag}</span>
+              <span>{l.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -1126,8 +1285,10 @@ export default function App() {
                 <Flame size={20} className="animate-bounce" />
               </div>
               <div>
-                <div className="text-xs font-black text-white">{levelInfo.rank_name}</div>
-                <div className="text-[10px] text-slate-400">Серия: {streakWeeks} нед. • {weeklyAttendanceCount}/3 на этой неделе</div>
+                <div className="text-xs font-black text-white">{getLocalizedField(levelInfo, 'rank_name', lang) || levelInfo.rank_name}</div>
+                <div className="text-[10px] text-slate-400">
+                  {streakWeeks} {t('active_streak', lang)} • {weeklyAttendanceCount}/3 {t('weekly_goal', lang)}
+                </div>
               </div>
             </div>
 
@@ -1138,7 +1299,7 @@ export default function App() {
               }}
               className="px-2.5 py-1.5 rounded-xl bg-blue-600/20 text-cyan-400 border border-blue-500/30 text-[10px] font-extrabold flex items-center gap-1"
             >
-              <span>Ранг {levelInfo.level}</span>
+              <span>{levelInfo.level} {t('active_status', lang)}</span>
               <ChevronRight size={13} />
             </button>
           </div>
@@ -1148,50 +1309,62 @@ export default function App() {
             <div className="flex items-center justify-between px-1">
               <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                 <Activity size={14} className="text-cyan-400" />
-                <span>Неделя цикла: {currentWeekMeta.tag}</span>
+                <span>{t('periodization_title', lang)}</span>
               </div>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${currentWeekMeta.badge_bg}`}>
+                {getLocalizedField(currentWeekMeta, 'tag', lang)}
+              </span>
             </div>
 
             <div className="grid grid-cols-4 gap-1.5">
               {[1, 2, 3, 4].map((wNum) => {
                 const isSelected = currentWeek === wNum;
+                const meta = PERIODIZATION_WEEKS[wNum];
                 return (
                   <button
                     key={wNum}
                     onClick={() => handleSelectWeek(wNum)}
-                    className={`py-2 rounded-2xl text-center transition-all border ${
+                    className={`py-2 px-1.5 rounded-2xl border flex flex-col items-center justify-center transition-all ${
                       isSelected
-                        ? 'bg-gradient-to-b from-cyan-600 to-blue-600 text-white font-black border-cyan-400 shadow-md scale-[1.02]'
-                        : 'bg-slate-800/80 text-slate-400 font-bold border-slate-700/60'
+                        ? 'bg-blue-600 text-white border-blue-400 shadow-md font-black scale-[1.02]'
+                        : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:border-slate-600'
                     }`}
                   >
-                    <div className="text-xs">Неделя {wNum}</div>
+                    <span className="text-[10px] font-extrabold">{wNum} {t('week_short', lang)}</span>
+                    <span className="text-[9px] opacity-80 truncate max-w-[70px]">{getLocalizedField(meta, 'tag', lang)}</span>
                   </button>
                 );
               })}
             </div>
+
+            <div className="p-3 bg-slate-800/60 rounded-2xl border border-slate-700/60 text-[11px] text-slate-300 flex items-start gap-2">
+              <Info size={14} className="text-cyan-400 shrink-0 mt-0.5" />
+              <span>{getLocalizedField(currentWeekMeta, 'description', lang)}</span>
+            </div>
           </div>
 
-          {/* 3-Day Split Selector Tabs */}
+          {/* 3-Day Split Navigation Chips */}
           <div className="grid grid-cols-3 gap-2">
-            {workoutSplits.map((split, idx) => {
-              const isSelected = selectedDayIdx === idx;
+            {workoutSplits.map((split, sIdx) => {
+              const isSelected = selectedDayIdx === sIdx;
               return (
                 <button
-                  key={split.id || idx}
+                  key={split.id || sIdx}
                   onClick={() => {
                     triggerHaptic('selection');
-                    setSelectedDayIdx(idx);
+                    setSelectedDayIdx(sIdx);
                   }}
-                  className={`py-2.5 px-1.5 rounded-2xl text-center transition-all border ${
+                  className={`py-3 px-2 rounded-2xl border transition-all text-left flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-blue-600 text-white font-black border-blue-400 shadow-lg shadow-blue-600/30 scale-[1.02]'
-                      : 'bg-slate-800/80 text-slate-400 font-bold border-slate-700/60'
+                      ? 'bg-gradient-to-b from-blue-600 to-indigo-700 text-white border-blue-400/50 shadow-lg shadow-blue-600/30'
+                      : 'bg-slate-800/80 text-slate-400 border-slate-700/80 hover:border-slate-600'
                   }`}
                 >
-                  <div className="text-xs">День {split.day_number || idx + 1}</div>
-                  <div className="text-[9px] opacity-80 truncate mt-0.5">
-                    {split.day_name?.split('(')[1]?.replace(')', '') || 'Сплит'}
+                  <span className="text-[10px] font-black uppercase opacity-75">
+                    {split.day_number ? `${split.day_number} Day` : `Day ${sIdx + 1}`}
+                  </span>
+                  <div className="text-xs font-black line-clamp-1 mt-1 text-white">
+                    {getLocalizedField(split, 'day_name', lang)?.split(':')[1] || getLocalizedField(split, 'day_name', lang)}
                   </div>
                 </button>
               );
@@ -1209,7 +1382,7 @@ export default function App() {
             className="w-full py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 font-black rounded-3xl text-white text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2.5 transition-all active:scale-[0.98]"
           >
             <Flame size={20} className="text-yellow-300 animate-bounce" />
-            <span>НАЧАТЬ ТРЕНИРОВКУ В ЗАЛЕ</span>
+            <span>{t('start_workout_btn', lang)}</span>
             <Sparkles size={18} />
           </button>
 
@@ -1218,29 +1391,34 @@ export default function App() {
             <div className="bg-slate-800/90 border border-slate-700/80 p-4 rounded-3xl space-y-3 shadow-xl">
               <div className="flex justify-between items-start border-b border-slate-700/60 pb-2.5">
                 <div>
-                  <h3 className="font-extrabold text-white text-xs">{activeWorkout.day_name}</h3>
-                  <span className="text-[10px] text-slate-400">{activeWorkout.focus}</span>
+                  <h3 className="font-extrabold text-white text-xs">{getLocalizedField(activeWorkout, 'day_name', lang)}</h3>
+                  <span className="text-[10px] text-slate-400">{getLocalizedField(activeWorkout, 'focus', lang)}</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-xl bg-blue-500/20 text-blue-300 text-[10px] font-bold border border-blue-500/30">
-                  {activeWorkout.exercises?.length || 0} упр.
+                <span className="px-2 py-0.5 rounded-xl bg-blue-500/20 text-blue-300 text-[10px] font-bold border border-blue-500/30 shrink-0">
+                  {activeWorkout.exercises?.length || 0} {t('exercises_count', lang)}
                 </span>
               </div>
 
               <div className="space-y-2">
                 {activeWorkout.exercises?.map((ex, idx) => (
                   <div key={ex.id || idx} className="p-2.5 bg-slate-900/90 rounded-2xl border border-slate-800 flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <div className="font-bold text-xs text-white">{idx + 1}. {ex.name}</div>
+                    <div className="space-y-0.5 flex-1 pr-2">
+                      <div className="font-bold text-xs text-white">{idx + 1}. {getLocalizedField(ex, 'name', lang)}</div>
                       <div className="text-[10px] text-cyan-400 font-semibold">
-                        {ex.sets} подх. × {ex.reps} • {ex.rpe ? `RPE ${ex.rpe}` : 'RPE 8'}
+                        {ex.sets} {t('sets_label', lang)} × {ex.reps} • {ex.rpe ? `RPE ${ex.rpe}` : 'RPE 8'}
                       </div>
                     </div>
                     {ex.video_url && (
                       <button
-                        onClick={() => setVideoModal(ex)}
-                        className="p-1.5 rounded-xl bg-purple-500/15 text-purple-300 border border-purple-500/30"
+                        onClick={() => {
+                          triggerHaptic('selection');
+                          setVideoModal(ex);
+                          setVideoModalExpanded(false);
+                        }}
+                        className="p-1.5 rounded-xl bg-purple-500/15 text-purple-300 border border-purple-500/30 flex items-center gap-1 text-[10px] font-bold shrink-0"
                       >
                         <Video size={13} />
+                        <span>{t('video_btn', lang)}</span>
                       </button>
                     )}
                   </div>
@@ -1261,12 +1439,12 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <CalendarIcon size={16} className="text-blue-400" />
                 <span className="text-xs font-extrabold uppercase tracking-wider text-white">
-                  Трекер посещений зала
+                  {t('calendar_title', lang)}
                 </span>
               </div>
               <div className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
                 <CheckCircle2 size={13} />
-                <span>{weeklyAttendanceCount} / 3 на этой неделе</span>
+                <span>{weeklyAttendanceCount} / 3 {t('weekly_goal', lang)}</span>
               </div>
             </div>
 
@@ -1298,15 +1476,15 @@ export default function App() {
               }`}
             >
               <Check size={14} />
-              <span>{isTodayAttended ? 'Сегодня в зале ✓ (Отмечено)' : 'Отметить тренировку сегодня'}</span>
+              <span>{isTodayAttended ? '✓ Check-in Done' : 'Check-in Today'}</span>
             </button>
           </div>
 
           {/* Month History */}
           <div className="bg-slate-800/90 border border-slate-700/80 p-4 rounded-3xl space-y-2.5 shadow-xl">
             <div className="flex justify-between items-center text-xs font-bold text-slate-200">
-              <span>История тренировок за месяц</span>
-              <span className="text-emerald-400 font-extrabold">{attendanceDates.length} посещений</span>
+              <span>{t('month_activity', lang)}</span>
+              <span className="text-emerald-400 font-extrabold">{attendanceDates.length} visits</span>
             </div>
             <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pt-1">
               {attendanceDates.map((dStr) => (
@@ -1318,12 +1496,12 @@ export default function App() {
           </div>
 
           {/* Past Photo Proofs Gallery */}
-          {checkIns.length > 0 && (
-            <div className="bg-slate-800/90 border border-slate-700/80 p-4 rounded-3xl space-y-2.5 shadow-xl">
-              <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                <ImageIcon size={14} className="text-cyan-400" />
-                <span>Фото-отчеты ({checkIns.length})</span>
-              </div>
+          <div className="bg-slate-800/90 border border-slate-700/80 p-4 rounded-3xl space-y-2.5 shadow-xl">
+            <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <ImageIcon size={14} className="text-cyan-400" />
+              <span>{t('checkin_history', lang)} ({checkIns.length})</span>
+            </div>
+            {checkIns.length > 0 ? (
               <div className="grid grid-cols-4 gap-2">
                 {checkIns.map((ci) => (
                   <div
@@ -1335,8 +1513,10 @@ export default function App() {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-[11px] text-slate-400 py-2 text-center">{t('no_checkins', lang)}</p>
+            )}
+          </div>
         </div>
       )}
 
@@ -1349,37 +1529,37 @@ export default function App() {
           <div className="bg-slate-800/90 border border-slate-700/80 p-4 rounded-3xl shadow-xl space-y-3">
             <div className="flex items-center justify-between border-b border-slate-700/60 pb-2.5">
               <div>
-                <span className="text-[10px] uppercase font-bold text-cyan-400">Персональный расчет</span>
-                <h3 className="text-xs font-black text-white">Суточная норма КБЖУ</h3>
+                <span className="text-[10px] uppercase font-bold text-cyan-400">{t('nutrition_title', lang)}</span>
+                <h3 className="text-xs font-black text-white">{t('daily_calories', lang)}</h3>
               </div>
               <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-500/30">
-                {profile.goal === 'muscle_gain' ? 'Профицит (+15%)' : 'Дефицит (-18%)'}
+                {profile.goal === 'muscle_gain' ? '+15% Surplus' : '-18% Deficit'}
               </span>
             </div>
 
             {/* Calories Big Box */}
             <div className="p-3.5 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 rounded-2xl border border-blue-500/30 text-center">
-              <span className="text-[10px] uppercase font-bold text-slate-400">Целевая калорийность в день</span>
-              <div className="text-3xl font-black text-white my-0.5">{nutritionTargets.calories} <span className="text-sm font-semibold text-slate-400">ккал</span></div>
-              <span className="text-[10px] text-cyan-400">Базовый обмен (BMR): {nutritionTargets.bmr} ккал</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('daily_calories', lang)}</span>
+              <div className="text-3xl font-black text-white my-0.5">{nutritionTargets.calories} <span className="text-sm font-semibold text-slate-400">{t('kcal_day', lang)}</span></div>
+              <span className="text-[10px] text-cyan-400">{t('bmr_label', lang)}: {nutritionTargets.bmr} kcal • {t('tdee_label', lang)}: {nutritionTargets.tdee}</span>
             </div>
 
             {/* Protein, Fats, Carbs Grid */}
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800">
-                <span className="text-[10px] text-red-400 font-bold">Белки</span>
-                <div className="text-base font-black text-white">{nutritionTargets.protein} г</div>
-                <span className="text-[9px] text-slate-500">2.0 г / кг</span>
+                <span className="text-[10px] text-red-400 font-bold">{t('protein_label', lang)}</span>
+                <div className="text-base font-black text-white">{nutritionTargets.protein} g</div>
+                <span className="text-[9px] text-slate-500">2.0 g/kg</span>
               </div>
               <div className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800">
-                <span className="text-[10px] text-amber-400 font-bold">Жиры</span>
-                <div className="text-base font-black text-white">{nutritionTargets.fats} г</div>
-                <span className="text-[9px] text-slate-500">1.0 г / кг</span>
+                <span className="text-[10px] text-amber-400 font-bold">{t('fats_label', lang)}</span>
+                <div className="text-base font-black text-white">{nutritionTargets.fats} g</div>
+                <span className="text-[9px] text-slate-500">1.0 g/kg</span>
               </div>
               <div className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800">
-                <span className="text-[10px] text-emerald-400 font-bold">Углеводы</span>
-                <div className="text-base font-black text-white">{nutritionTargets.carbs} г</div>
-                <span className="text-[9px] text-slate-500">Энергия</span>
+                <span className="text-[10px] text-emerald-400 font-bold">{t('carbs_label', lang)}</span>
+                <div className="text-base font-black text-white">{nutritionTargets.carbs} g</div>
+                <span className="text-[9px] text-slate-500">Energy</span>
               </div>
             </div>
           </div>
@@ -1389,16 +1569,12 @@ export default function App() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Droplets size={16} className="text-cyan-400" />
-                <h4 className="text-xs font-black text-white uppercase tracking-wider">Трекер воды</h4>
+                <h4 className="text-xs font-black text-white uppercase tracking-wider">{t('water_label', lang)}</h4>
               </div>
               <span className="text-xs font-bold text-cyan-400">
-                {waterCups} из 8 стаканов ({Math.round(waterCups * 250)} мл)
+                {waterCups} / 8 {t('glasses_label', lang)} ({Math.round(waterCups * 250)} ml)
               </span>
             </div>
-
-            <p className="text-[11px] text-slate-400">
-              Нажимайте на стаканы в течение дня для поддержания водного баланса (норма: {nutritionTargets.waterLiters} л):
-            </p>
 
             <div className="grid grid-cols-8 gap-1.5">
               {Array.from({ length: 8 }).map((_, cIdx) => (
@@ -1410,7 +1586,6 @@ export default function App() {
                       ? 'bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-md scale-[1.03]'
                       : 'bg-slate-900/60 border-slate-700 text-slate-600'
                   }`}
-                  title={`Стакан ${cIdx + 1}`}
                 >
                   <Droplets size={16} className={cIdx < waterCups ? 'text-cyan-400 animate-pulse' : 'text-slate-600'} />
                   <span className="text-[9px] font-black mt-1">{cIdx + 1}</span>
@@ -1431,22 +1606,24 @@ export default function App() {
             <div className="flex justify-between items-start">
               <div>
                 <span className={`text-[10px] uppercase font-black px-2 py-0.5 rounded-full border ${currentBadge.bg} ${currentBadge.color} ${currentBadge.border}`}>
-                  Уровень {levelInfo.level} • {currentBadge.name.split(' ')[0]}
+                  {t('active_status', lang)} {levelInfo.level}
                 </span>
-                <h2 className="text-lg font-black text-white mt-1">{levelInfo.rank_name}</h2>
+                <h2 className="text-lg font-black text-white mt-1">
+                  {getLocalizedField(levelInfo, 'rank_name', lang) || levelInfo.rank_name}
+                </h2>
               </div>
 
               <div className="flex items-center gap-1.5 bg-amber-500/20 text-amber-300 px-3 py-1.5 rounded-2xl border border-amber-500/40 font-black text-sm">
                 <Flame size={18} className="text-orange-500" />
-                <span>{streakWeeks} нед.</span>
+                <span>{streakWeeks} {t('week_short', lang)}</span>
               </div>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between text-[11px] text-slate-400 font-semibold">
-                <span>Прогресс до след. ранга</span>
+                <span>{t('progress_to_next', lang)}</span>
                 <span className="text-cyan-400">
-                  {levelInfo.level >= 5 ? 'Максимальный ранг!' : `${levelInfo.weeks_left} нед. (${levelInfo.workouts_left} трен.)`}
+                  {levelInfo.level >= 5 ? 'Max Rank' : `${levelInfo.weeks_left} ${t('weeks_left', lang)}`}
                 </span>
               </div>
               <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
@@ -1466,7 +1643,7 @@ export default function App() {
             >
               <div className="flex items-center gap-2">
                 <Trophy size={16} className="text-amber-400" />
-                <span>Дорожная карта всех 5 рангов</span>
+                <span>{t('unlocked_perks', lang)}</span>
               </div>
               <ChevronRight size={14} className="text-cyan-400" />
             </button>
@@ -1485,11 +1662,39 @@ export default function App() {
                 <Calculator size={20} />
               </div>
               <div>
-                <div className="text-xs font-black text-white">Калькулятор 1ПМ (1 Rep Max)</div>
-                <div className="text-[10px] text-slate-400">Расчет процентовок для силы и пампа</div>
+                <div className="text-xs font-black text-white">{t('one_rm_calc', lang)}</div>
+                <div className="text-[10px] text-slate-400">{t('intensity_pct', lang)}</div>
               </div>
             </div>
             <ChevronRight size={16} className="text-slate-400" />
+          </div>
+
+          {/* Language Selection Card in Profile */}
+          <div className="bg-slate-800/90 border border-slate-700/80 p-4 rounded-3xl shadow-xl space-y-2.5">
+            <div className="flex items-center gap-2 text-xs font-black text-white">
+              <Globe size={16} className="text-cyan-400" />
+              <span>{t('switch_language', lang)}</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { code: 'ru', flag: '🇷🇺', title: 'Русский', sub: 'RU' },
+                { code: 'uz', flag: '🇺🇿', title: 'O\'zbekcha', sub: 'UZ' },
+                { code: 'en', flag: '🇬🇧', title: 'English', sub: 'EN' }
+              ].map((l) => (
+                <button
+                  key={l.code}
+                  onClick={() => changeLanguage(l.code)}
+                  className={`p-3 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all ${
+                    lang === l.code
+                      ? 'bg-blue-600 text-white border-blue-400 shadow-lg shadow-blue-600/30 font-black scale-[1.02]'
+                      : 'bg-slate-900/60 border-slate-700 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <span className="text-xl">{l.flag}</span>
+                  <span className="text-xs font-bold">{l.title}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Edit Profile Button */}
@@ -1501,7 +1706,7 @@ export default function App() {
             className="w-full py-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 hover:text-white flex items-center justify-center gap-2"
           >
             <Settings size={15} />
-            <span>Изменить цель, пол или вес</span>
+            <span>{t('edit_profile', lang)}</span>
           </button>
         </div>
       )}
@@ -1512,10 +1717,10 @@ export default function App() {
       <div className="fixed inset-x-0 bottom-0 z-40 bg-slate-950/90 backdrop-blur-xl border-t border-slate-800 p-2">
         <div className="max-w-md mx-auto grid grid-cols-4 gap-1">
           {[
-            { id: 'workout', label: 'Тренировка', icon: Dumbbell },
-            { id: 'calendar', label: 'Дневник', icon: CalendarIcon },
-            { id: 'nutrition', label: 'Питание', icon: Droplets },
-            { id: 'profile', label: 'Профиль', icon: Trophy }
+            { id: 'workout', label: t('tab_workouts', lang), icon: Dumbbell },
+            { id: 'calendar', label: t('tab_calendar', lang), icon: CalendarIcon },
+            { id: 'nutrition', label: t('tab_nutrition', lang), icon: Droplets },
+            { id: 'profile', label: t('tab_profile', lang), icon: Trophy }
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -1548,7 +1753,7 @@ export default function App() {
             <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
               <div className="flex items-center gap-2">
                 <Trophy size={18} className="text-amber-400" />
-                <h3 className="text-sm font-black text-white">Дорожная карта рангов и перков</h3>
+                <h3 className="text-sm font-black text-white">{t('unlocked_perks', lang)}</h3>
               </div>
               <button onClick={() => setRoadmapModal(false)} className="p-1.5 rounded-full bg-slate-800 text-slate-400">
                 <X size={16} />
@@ -1557,10 +1762,9 @@ export default function App() {
 
             <div className="p-4 overflow-y-auto space-y-3.5">
               <div className="p-3.5 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 rounded-2xl border border-blue-500/30 text-center space-y-1">
-                <span className="text-[10px] uppercase font-black text-cyan-400">Текущий статус</span>
-                <div className="text-base font-black text-white">Уровень {levelInfo.level} • {levelInfo.rank_name}</div>
-                <div className="text-xs text-amber-300 font-bold">
-                  {levelInfo.level >= 5 ? 'Все возможности открыты!' : `До след. уровня: ${levelInfo.weeks_left} нед. (${levelInfo.workouts_left} тренировок)`}
+                <span className="text-[10px] uppercase font-black text-cyan-400">{t('active_status', lang)}</span>
+                <div className="text-base font-black text-white">
+                  {levelInfo.level} • {getLocalizedField(levelInfo, 'rank_name', lang) || levelInfo.rank_name}
                 </div>
               </div>
 
@@ -1585,13 +1789,13 @@ export default function App() {
                             {isUnlocked ? <Unlock size={13} /> : <Lock size={13} />}
                           </div>
                           <div>
-                            <div className="text-xs font-black text-white">Уровень {lvl.level}: {lvl.rank_name}</div>
+                            <div className="text-xs font-black text-white">{getLocalizedField(lvl, 'rank_name', lang)}</div>
                             <span className="text-[10px] text-slate-400">{lvl.weeks_span}</span>
                           </div>
                         </div>
                         {!isUnlocked && (
                           <span className="text-[10px] bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full font-bold">
-                            {weeksToUnlock} нед.
+                            {weeksToUnlock} {t('week_short', lang)}
                           </span>
                         )}
                       </div>
@@ -1601,7 +1805,7 @@ export default function App() {
                           <div key={pIdx} className="flex items-start gap-1.5 text-[11px]">
                             {isUnlocked ? <CheckCircle2 size={12} className="text-emerald-400 shrink-0 mt-0.5" /> : <Lock size={11} className="text-slate-500 shrink-0 mt-0.5" />}
                             <span className={isUnlocked ? 'text-slate-200' : 'text-slate-400'}>
-                              <strong>{p.name}:</strong> <span className="text-[10px] text-slate-400">{p.desc}</span>
+                              <strong>{getLocalizedField(p, 'name', lang)}:</strong> <span className="text-[10px] text-slate-400">{p.desc}</span>
                             </span>
                           </div>
                         ))}
@@ -1622,7 +1826,7 @@ export default function App() {
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <div className="flex items-center gap-2">
                 <Calculator size={18} className="text-cyan-400" />
-                <h3 className="text-sm font-black text-white">Калькулятор 1ПМ (1 Rep Max)</h3>
+                <h3 className="text-sm font-black text-white">{t('one_rm_calc', lang)}</h3>
               </div>
               <button onClick={() => setCalculatorModal(false)} className="p-1 rounded-full bg-slate-800 text-slate-400">
                 <X size={16} />
@@ -1631,7 +1835,7 @@ export default function App() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Вес (кг)</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('lifted_weight', lang)}</label>
                 <input
                   type="number"
                   value={calcWeight}
@@ -1640,7 +1844,7 @@ export default function App() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Повторы</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('reps_performed', lang)}</label>
                 <input
                   type="number"
                   value={calcReps}
@@ -1651,22 +1855,22 @@ export default function App() {
             </div>
 
             <div className="p-3 bg-gradient-to-tr from-cyan-950/60 to-blue-900/60 rounded-2xl border border-cyan-500/40 text-center">
-              <span className="text-[10px] uppercase font-bold text-slate-400">Расчетный максимум (1ПМ)</span>
-              <div className="text-3xl font-black text-cyan-300">{calculated1RMValue} кг</div>
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('calc_result', lang)}</span>
+              <div className="text-3xl font-black text-cyan-300">{calculated1RMValue} kg</div>
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center text-xs">
               <div className="p-2 rounded-xl bg-slate-800 border border-slate-700">
-                <span className="text-[10px] text-slate-400">90% Сила</span>
-                <div className="font-bold text-white">{Math.round(calculated1RMValue * 0.9)} кг</div>
+                <span className="text-[10px] text-slate-400">90% Strength</span>
+                <div className="font-bold text-white">{Math.round(calculated1RMValue * 0.9)} kg</div>
               </div>
               <div className="p-2 rounded-xl bg-slate-800 border border-slate-700">
-                <span className="text-[10px] text-slate-400">80% Объем</span>
-                <div className="font-bold text-white">{Math.round(calculated1RMValue * 0.8)} кг</div>
+                <span className="text-[10px] text-slate-400">80% Volume</span>
+                <div className="font-bold text-white">{Math.round(calculated1RMValue * 0.8)} kg</div>
               </div>
               <div className="p-2 rounded-xl bg-slate-800 border border-slate-700">
-                <span className="text-[10px] text-slate-400">70% Памп</span>
-                <div className="font-bold text-white">{Math.round(calculated1RMValue * 0.7)} кг</div>
+                <span className="text-[10px] text-slate-400">70% Pump</span>
+                <div className="font-bold text-white">{Math.round(calculated1RMValue * 0.7)} kg</div>
               </div>
             </div>
           </div>
@@ -1678,7 +1882,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-200">
           <div className="relative max-w-sm w-full bg-slate-900 rounded-3xl overflow-hidden border border-blue-500/40 shadow-2xl p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h4 className="text-xs font-black text-white">{alternativeModal.exercise.name}</h4>
+              <h4 className="text-xs font-black text-white">{getLocalizedField(alternativeModal.exercise, 'name', lang)}</h4>
               <button onClick={() => setAlternativeModal(null)} className="p-1 rounded-full bg-slate-800 text-slate-400">
                 <X size={16} />
               </button>
@@ -1687,14 +1891,14 @@ export default function App() {
             <div className="space-y-2">
               {alternativeModal.exercise.alternatives?.map((alt, aIdx) => (
                 <div key={aIdx} className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1.5">
-                  <div className="font-bold text-xs text-white">{alt.name}</div>
-                  <div className="text-[10px] text-slate-400">{alt.tip}</div>
+                  <div className="font-bold text-xs text-white">{getLocalizedField(alt, 'name', lang)}</div>
+                  <div className="text-[10px] text-slate-400">{getLocalizedField(alt, 'tip', lang)}</div>
                   <button
                     onClick={() => handleSwapExercise(alt)}
                     className="w-full py-2 bg-blue-600 font-bold rounded-xl text-white text-xs flex items-center justify-center gap-1"
                   >
                     <Check size={13} />
-                    <span>Выбрать это упражнение</span>
+                    <span>{t('select_this_exercise', lang)}</span>
                   </button>
                 </div>
               ))}
@@ -1703,24 +1907,78 @@ export default function App() {
         </div>
       )}
 
-      {/* VIDEO TECHNIQUE MODAL */}
+      {/* 🎬 VIDEO TECHNIQUE MODAL (Standard & Fullscreen Cinema Mode) */}
       {videoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-purple-500/40 rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h4 className="text-xs font-bold text-white truncate max-w-[220px]">{videoModal.name}</h4>
-              <button onClick={() => setVideoModal(null)} className="p-1 rounded-full bg-slate-800 text-slate-400">
-                <X size={16} />
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-2 sm:p-4 animate-in fade-in duration-200">
+          <div className={`bg-slate-900 border border-purple-500/50 rounded-3xl w-full flex flex-col overflow-hidden shadow-2xl transition-all duration-300 ${
+            videoModalExpanded
+              ? 'max-w-4xl h-[88vh] max-h-[92vh] p-4 sm:p-5'
+              : 'max-w-md p-4 space-y-3'
+          }`}>
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+              <div className="flex items-center gap-2 flex-1 mr-2 overflow-hidden">
+                <Video size={16} className="text-purple-400 shrink-0" />
+                <h4 className="text-xs font-bold text-white truncate">
+                  {getLocalizedField(videoModal, 'name', lang)}
+                </h4>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                {/* Direct YouTube App Launch */}
+                <a
+                  href={getDirectYoutubeUrl(videoModal.video_url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2 py-1 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-bold flex items-center gap-1 hover:bg-red-600/30"
+                  title={t('open_youtube', lang)}
+                >
+                  <ExternalLink size={12} />
+                  <span className="hidden sm:inline">{t('open_youtube', lang)}</span>
+                </a>
+
+                {/* Size toggle: Maximize / Minimize */}
+                <button
+                  onClick={() => setVideoModalExpanded(!videoModalExpanded)}
+                  className="p-1.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700"
+                  title={videoModalExpanded ? t('exit_fullscreen', lang) : t('fullscreen_video', lang)}
+                >
+                  {videoModalExpanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setVideoModal(null);
+                    setVideoModalExpanded(false);
+                  }}
+                  className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white border border-slate-700"
+                >
+                  <X size={15} />
+                </button>
+              </div>
             </div>
-            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-slate-800">
+
+            {/* Embedded Responsive Player */}
+            <div className={`w-full rounded-2xl overflow-hidden bg-black border border-slate-800 ${
+              videoModalExpanded ? 'flex-1 min-h-0 aspect-auto' : 'aspect-video'
+            }`}>
               <iframe
-                src={`${videoModal.video_url}?autoplay=1&mute=1&loop=1&playsinline=1`}
-                title={videoModal.name}
+                src={getYoutubeEmbedUrl(videoModal.video_url, true)}
+                title={getLocalizedField(videoModal, 'name', lang)}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                 allowFullScreen
                 className="w-full h-full"
               />
             </div>
+
+            {/* Coach Biomechanics Tip */}
+            {videoModal.tip && (
+              <div className="mt-2.5 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-300 flex items-start gap-1.5">
+                <Info size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>{t('pro_tip', lang)}:</strong> {getLocalizedField(videoModal, 'tip', lang)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1746,7 +2004,7 @@ export default function App() {
             </button>
 
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Таймер отдыха</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">{t('rest_timer_title', lang)}</span>
               <h4 className="text-sm font-bold text-white truncate mt-0.5">{currentExName}</h4>
             </div>
 
@@ -1762,7 +2020,7 @@ export default function App() {
                 }`}
               >
                 {timerRunning ? <Pause size={14} /> : <Play size={14} />}
-                <span>{timerRunning ? 'Пауза' : timeLeft === 0 ? 'Заново' : 'Старт'}</span>
+                <span>{timerRunning ? 'Pause' : timeLeft === 0 ? 'Restart' : 'Start'}</span>
               </button>
               <button
                 onClick={() => { triggerHaptic('selection'); setTimeLeft(timerSeconds); setTimerRunning(false); }}
@@ -1785,11 +2043,11 @@ export default function App() {
               </div>
             </div>
             <div>
-              <span className="text-xs font-black uppercase text-amber-400">Новый уровень достигнут!</span>
+              <span className="text-xs font-black uppercase text-amber-400">Level Up!</span>
               <h3 className="text-2xl font-black text-white mt-1">Lvl {levelUpModal.level} • {levelUpModal.rank_name}</h3>
             </div>
             <button onClick={() => setLevelUpModal(null)} className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-xs">
-              Продолжить тренировки 🔥
+              Continue 🔥
             </button>
           </div>
         </div>
