@@ -57,6 +57,7 @@ import {
   LEVEL_PERKS, 
   PERIODIZATION_WEEKS, 
   WARMUP_EXERCISES,
+  getWarmupExercises,
   COOLDOWN_EXERCISES,
   RANKS,
   getYoutubeEmbedUrl,
@@ -841,7 +842,7 @@ export default function App() {
             </div>
 
             <div className="space-y-2">
-              {WARMUP_EXERCISES.map((w, idx) => {
+              {getWarmupExercises(profile.gender).map((w, idx) => {
                 const isDone = completedWarmups[w.id];
                 return (
                   <div

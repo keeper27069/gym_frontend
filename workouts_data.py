@@ -186,7 +186,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "10-12",
                 "rest_sec": 75,
-                "video_url": "https://www.youtube.com/embed/SEdqd1n0cvg",
+                "video_url": "https://www.youtube.com/embed/kYJ_U4y7tS0",
                 "tip": "Пауза 2 секунды в верхней точке с максимальным прожимом ягодиц. Подбородок прижат к груди."
             },
             {
@@ -349,7 +349,7 @@ WORKOUT_SPLITS = [
                 "sets": 4,
                 "reps": "12-15",
                 "rest_sec": 45,
-                "video_url": "https://www.youtube.com/embed/SEdqd1n0cvg",
+                "video_url": "https://www.youtube.com/embed/kYJ_U4y7tS0",
                 "tip": "Пауза в верхней точке на 2 секунды с мощным сжатием ягодиц."
             },
             {

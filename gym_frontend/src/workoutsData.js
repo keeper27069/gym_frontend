@@ -680,7 +680,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 75,
         rpe: 8,
         tempo: '2-2-1-0',
-        video_url: 'https://www.youtube.com/embed/SEdqd1n0cvg',
+        video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
         tip: 'Пауза 2 секунды в верхней точке с максимальным прожимом ягодиц. Подбородок прижат к груди, колени под углом 90°.',
         tip_uz: 'Yuqori nuqtada 2 soniya to\'xtang va dumbani qattiq siqing. Iyak ko\'krakka egilgan bo\'lsin.',
         tip_en: 'Pause 2s at the top squeezing glutes hard. Keep chin tucked and shins vertical.',
@@ -689,14 +689,14 @@ export const WORKOUT_SPLITS = [
             name: 'Ягодичный мостик в тренажере Смита',
             name_uz: 'Smit trenajyorida dumba ko\'prigi',
             name_en: 'Smith Machine Hip Thrust',
-            video_url: 'https://www.youtube.com/embed/SEdqd1n0cvg',
+            video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
             tip: 'Фиксированная траектория для комфортной работы с повышенным весом.'
           },
           {
             name: 'Kas Glute Bridge с короткой амплитудой',
             name_uz: 'Kas Glute Bridge qisqa amplituda',
             name_en: 'Kas Glute Bridge',
-            video_url: 'https://www.youtube.com/embed/SEdqd1n0cvg',
+            video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
             tip: 'Исключает работу квадрицепса, нагружая только ягодицы.'
           }
         ]
@@ -1091,7 +1091,7 @@ export const WORKOUT_SPLITS = [
         rest_sec: 45,
         rpe: 8,
         tempo: '2-1-1-0',
-        video_url: 'https://www.youtube.com/embed/SEdqd1n0cvg',
+        video_url: 'https://www.youtube.com/embed/kYJ_U4y7tS0',
         tip: 'Пауза в верхней точке на 2 секунды с мощным сжатием ягодиц.',
         tip_uz: 'Yuqori nuqtada 2 soniya qotirib siqing.',
         tip_en: 'Squeeze glutes hard at the top with a 2-second pause.',
@@ -2024,6 +2024,79 @@ export const WARMUP_EXERCISES = [
     video_url: 'https://www.youtube.com/embed/X3q5e1kA4xU'
   }
 ];
+
+// 5-Minute Joint and Mobility Warm-up Routine (Female Video Demos)
+export const WARMUP_EXERCISES_FEMALE = [
+  {
+    id: 'w1',
+    name: 'Суставная гимнастика шеи, плеч и локтей',
+    name_uz: 'Bo\'yin, yelka va tirsaklar bo\'g\'inlari gimnastikasi',
+    name_en: 'Neck, Shoulders & Elbows Joint Mobility',
+    duration: '60 сек',
+    duration_uz: '60 soniya',
+    duration_en: '60 sec',
+    tip: 'Мягкие круговые вращения в суставах, подготовка синовиальной жидкости к нагрузке.',
+    tip_uz: 'Bo\'g\'inlarni asta-sekin aylantirish, harakatga tayyorgarlik.',
+    tip_en: 'Gentle circular joint rotations, lubricating synovial fluid.',
+    video_url: 'https://www.youtube.com/embed/pvIjsG5Svck'
+  },
+  {
+    id: 'w2',
+    name: 'Разогрев ротаторов плеча и грудного отдела',
+    name_uz: 'Yelka rotatorlari va ko\'krak qafasini qizdirish',
+    name_en: 'Rotator Cuff & Thoracic Spine Activation',
+    duration: '60 сек',
+    duration_uz: '60 soniya',
+    duration_en: '60 sec',
+    tip: 'Вращения прямых рук, сведение-разведение лопаток без веса или с легкой резинкой.',
+    tip_uz: 'To\'g\'ri qo\'llarni aylantirish, kuraklarni birlashtirish va yoyish.',
+    tip_en: 'Arm circles and scapular retraction with light band.',
+    video_url: 'https://www.youtube.com/embed/ttvfGg9d76c'
+  },
+  {
+    id: 'w3',
+    name: 'Мобильность тазобедренных суставов & приседы с весом тела',
+    name_uz: 'Chanoq bo\'g\'inlari harakatchanligi & o\'z vaznida cho\'kish',
+    name_en: 'Hip Mobility & Bodyweight Squats',
+    duration: '90 сек',
+    duration_uz: '90 soniya',
+    duration_en: '90 sec',
+    tip: '15 глубоких приседаний с фиксацией внизу для раскрытия таза и коленей.',
+    tip_uz: '15 marta chuqur cho\'kish, tizzalarni qizdirish.',
+    tip_en: '15 deep squats with 1s pause to open hips and warm knees.',
+    video_url: 'https://www.youtube.com/embed/MeIiIdhvXT4'
+  },
+  {
+    id: 'w4',
+    name: 'Динамическая планка и активация кора',
+    name_uz: 'Dinamik planka va qorin matbuoti faollashuvi',
+    name_en: 'Dynamic Plank & Deep Core Activation',
+    duration: '45 сек',
+    duration_uz: '45 soniya',
+    duration_en: '45 sec',
+    tip: 'Планка на предплечьях с поочередным выпрямлением рук для включения пресса и стабилизаторов.',
+    tip_uz: 'Qorin matbuoti va orqa stabilizatorlarini faollashtirish.',
+    tip_en: 'Forearm plank with soft reach to activate core stabilizers.',
+    video_url: 'https://www.youtube.com/embed/pvIjsG5Svck'
+  },
+  {
+    id: 'w5',
+    name: 'Легкий кардио-разогрев (дорожка / эллипс / прыжки)',
+    name_uz: 'Yengil kardio qizish (yo\'lakcha / ellips / sakrash)',
+    name_en: 'Light Cardio Warm-up (Treadmill / Elliptical)',
+    duration: '2-3 мин',
+    duration_uz: '2-3 daqiqa',
+    duration_en: '2-3 min',
+    tip: 'Пульс 110-125 уд/мин, разогрев мышц до легкого потоотделения.',
+    tip_uz: 'Puls 110-125 urish/daq, mushaklarni harakatga keltirish.',
+    tip_en: 'Target HR 110-125 bpm, warming muscle tissue for lifting.',
+    video_url: 'https://www.youtube.com/embed/X3q5e1kA4xU'
+  }
+];
+
+export function getWarmupExercises(gender = 'male') {
+  return gender === 'female' ? WARMUP_EXERCISES_FEMALE : WARMUP_EXERCISES;
+}
 
 // 4-Minute Stretching Cooldown Routine
 export const COOLDOWN_EXERCISES = [
